@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+    </ion-buttons>
+
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="login-logo">
+    <img src="assets/img/appicon.svg" alt="Ionic logo">
+  </div>
+
+  <form #loginForm="ngForm" novalidate>
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked" color="primary">CPF</ion-label>
+        <ion-input [(ngModel)]="login.cpf" name="cpf" type="text" #cpf="ngModel" spellcheck="false" autocapitalize="off"
+          required>
+        </ion-input>
+      </ion-item>
+
+      <ion-text color="danger">
+        <p [hidden]="cpf.valid || submitted == false" class="ion-padding-start">
+          CPF obrigatório
+        </p>
+      </ion-text>
+
+      <ion-item>
+        <ion-label position="stacked" color="primary">Data de Nascimento</ion-label>
+        <ion-input [(ngModel)]="login.dataNascimento" name="dataNascimento" type="date" #dataNascimento="ngModel" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-text color="danger">
+        <p [hidden]="dataNascimento.valid || submitted == false" class="ion-padding-start">
+          Data de nascimento obrigatório
+        </p>
+      </ion-text>
+
+      <ion-item>
+        <ion-label position="stacked" color="primary">Senha</ion-label>
+        <ion-input [(ngModel)]="login.senha" name="senha" type="password" #senha="ngModel" required>
+        </ion-input>
+      </ion-item>
+
+      <ion-text color="danger">
+        <p [hidden]="senha.valid || submitted == false" class="ion-padding-start">
+          Data de nascimento obrigatório
+        </p>
+      </ion-text>
+    </ion-list>
+
+    <ion-row>
+      <ion-col>
+        <ion-button (click)="onLogin(loginForm)" type="submit" expand="block">Entrar</ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+
+</ion-content>

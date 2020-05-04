@@ -1,0 +1,41 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button *ngIf="ios" (click)="cancelar()">Cancelar</ion-button>
+      <ion-button *ngIf="!ios" (click)="selecionarTodos(false)">Limpar</ion-button>
+    </ion-buttons>
+
+    <ion-title>
+      Filtros
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="salvar()" strong>Salvar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list [lines]="ios ? 'inset' : 'full'">
+    <ion-list-header>Selecione</ion-list-header>
+
+    <ion-item *ngFor="let filtro of filtros" [attr.filtro]="filtro.descricao | lowercase">
+      <!-- <ion-icon *ngIf="ios" slot="start" [name]="filtro.icon" color="medium"></ion-icon> -->
+      <ion-label>{{filtro.descricao}}</ion-label>
+      <ion-checkbox [(ngModel)]="filtro.selecionado"></ion-checkbox>
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>
+
+<ion-footer translucent="true" *ngIf="ios">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="selecionarTodos(false)">Deselecionar todos</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="selecionarTodos(true)">Selecionar todos</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

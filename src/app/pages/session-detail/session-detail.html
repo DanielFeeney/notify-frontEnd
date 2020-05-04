@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="default"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()">
+        <ion-icon *ngIf="!isFavorite" slot="icon-only" name="star-outline"></ion-icon>
+        <ion-icon *ngIf="isFavorite" slot="icon-only" name="star"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  
+  <div *ngIf="publicacao" class="ion-padding">
+    <span>Publicado em: {{publicacao.dataCriacao | date: 'dd/MM/yyyy'}}</span>
+    <h1>{{publicacao.titulo}}</h1>
+    <span>{{publicacao.subTitulo}}</span>
+    <ion-text color="medium">
+      {{publicacao.descricao}}
+    </ion-text>
+  </div>
+
+  <ion-list>
+  </ion-list>
+  <ion-list [lines]="ios ? 'inset' : 'full'">
+    <ion-list-header>Tags</ion-list-header>
+
+    <ion-item *ngFor="let filtro of filtros" [attr.filtro]="filtro.descricao | lowercase">
+      <!-- <ion-icon *ngIf="ios" slot="start" [name]="filtro.icon" color="medium"></ion-icon> -->
+      <ion-label>{{filtro.descricao}}</ion-label>
+    </ion-item>
+
+  </ion-list>
+</ion-content>

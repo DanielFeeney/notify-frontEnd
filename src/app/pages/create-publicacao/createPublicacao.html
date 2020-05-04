@@ -1,0 +1,72 @@
+<ion-header translucent="true">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button *ngIf="ios" (click)="cancelar()">Cancelar</ion-button>
+      </ion-buttons>
+      <ion-title *ngIf="!ios && !showSearchbar">Nova Publicação</ion-title>
+      
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content fullscreen="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">Nova Publicação</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <form #loginForm="ngForm" novalidate>
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked" color="primary">Título</ion-label>
+            <ion-input [(ngModel)]="publicacao.titulo"  name="titulo" type="text" spellcheck="false" autocapitalize="off"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked" color="primary">Subtitulo</ion-label>
+            <ion-input [(ngModel)]="publicacao.subTitulo"  name="subtitulo" type="text" spellcheck="false" autocapitalize="off">
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked" color="primary">Descrição</ion-label>
+            <ion-textarea [(ngModel)]="publicacao.descricao" name="descricao" type="text" spellcheck="false" autocapitalize="off"></ion-textarea>
+          </ion-item>
+
+          <ion-card>
+            <ion-card-header>
+              Incluir imagem
+            </ion-card-header>
+            <ion-item *ngIf="photo">
+              <img [src]="photo">
+          </ion-item>
+          <ion-item>
+            <button ion-button block (click)="getCameraPhoto()" [disabled]="cameraOn">Camera</button>
+          </ion-item>
+          </ion-card>
+
+          <ion-list [lines]="ios ? 'inset' : 'full'">
+            <ion-list-header>Selecione</ion-list-header>
+        
+            <ion-item *ngFor="let filtro of publicacao.colTag" [attr.filtro]="filtro.descricao | lowercase">
+              <ion-label>{{filtro.descricao}}</ion-label>
+              <ion-checkbox [(ngModel)]="filtro.selecionado" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+            </ion-item>
+        
+          </ion-list>
+    
+          
+        </ion-list>
+    
+        <ion-row>
+          <ion-col>
+            <ion-button  type="submit" expand="block" (click)="save()">Salvar</ion-button>
+          </ion-col>
+        </ion-row>
+      </form>
+  
+    
+  </ion-content>
+  
