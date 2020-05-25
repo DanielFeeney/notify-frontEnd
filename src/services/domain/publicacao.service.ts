@@ -31,4 +31,27 @@ export class PublicacaoService {
         return this.http.post<PublicacaoDTO>(`${API_CONFIG.baseUrl}/publicacao`, publicacao,
         {'headers': this.authHeader});
     }
+
+    criacao(cpf: String):  Observable<Boolean> {
+        return this.http.get<Boolean>(`${API_CONFIG.baseUrl}/usuario/criacao/${cpf}`,
+        {'headers': this.authHeader});
+    }
+
+    edicao(idPublicacao : Number ,cpf: string):  Observable<Boolean> {
+        const formData = new FormData();
+        formData.append('idPublicacao', idPublicacao.toString());
+        formData.append('cpf', cpf);
+        return this.http.post<Boolean>(`${API_CONFIG.baseUrl}/usuario/edicao`, formData,
+        {'headers': this.authHeader});
+    }
+
+    delecao(idPublicacao : Number ,cpf: string):  Observable<Boolean> {
+        const formData = new FormData();
+        formData.append('idPublicacao', idPublicacao.toString());
+        formData.append('cpf', cpf);
+        return this.http.post<Boolean>(`${API_CONFIG.baseUrl}/usuario/delecao`, formData,
+        {'headers': this.authHeader});
+    }
+
+
 }

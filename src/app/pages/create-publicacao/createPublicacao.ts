@@ -11,6 +11,8 @@ import { PublicacaoService } from '../../../services/domain/publicacao.service';
 import { StorageService } from '../../../services/application/storage.service';
 import { Router } from '@angular/router';
 import { CameraOptions, Camera } from '@ionic-native/camera/ngx';
+import {storage, initializeApp} from 'firebase'
+import { firebaseConfig } from '../../../services/application/firebase.configutation';
 
 @Component({
   selector: 'create-publicacao',
@@ -20,7 +22,7 @@ export class CreatePublicacao {
 
 
 
-  publicacao: PublicacaoDTO;
+  publicacao: PublicacaoDTO =  {id: null, titulo : '', subTitulo: '', descricao: '', dataCriacao: new Date(), imagem: '', colTag: [], cpfUsuario: null};
   photo: string;
   cameraOn: boolean = false;
 
@@ -37,7 +39,11 @@ export class CreatePublicacao {
     public router: Router,
     private PublicacaoService: PublicacaoService,
     private toastController: ToastController,
-    public camera: Camera) { }
+    public camera: Camera) { 
+
+      initializeApp(firebaseConfig);
+
+    }
 
   ionViewWillEnter() {
     let verifica = this.storage.getLocalUser();
@@ -48,7 +54,7 @@ export class CreatePublicacao {
     else{
       cpf = verifica.cpf;
     }
-    this.publicacao = {id: null, titulo : '', subTitulo: '', descricao: '', dataCriacao: new Date(), imagem: '', colTag: [], cpfUsuario: cpf}
+    this.publicacao.cpfUsuario = cpf;
     this.ios = this.config.get('mode') === `ios`;
 
     this.photoService.loadSaved();
@@ -102,14 +108,18 @@ export class CreatePublicacao {
     this.cameraOn = true;
     const options: CameraOptions = {
       quality: 100,
-      destinationType: this.camera.DestinationType.FILE_URI,
-      encodingType: this.camera.EncodingType.JPEG,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      encodingType: this.camera.EncodingType.PNG,
       mediaType: this.camera.MediaType.PICTURE
     }
     
     this.camera.getPicture(options).then((imageData) => {
-     this.photo = 'data:image/png;base64,' + imageData;
-     this.cameraOn = false;
+    this.photo = 'data:image/png;base64,' + imageData;
+    const pictures = storage().ref('pictures');
+    pictures.putString(this.photo, 'data_url');
+
+
+    this.cameraOn = false;
     }, (err) => {
      // Handle error
     });

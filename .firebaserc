@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "ionic-ng-conf-app"
+    "notify": "notify-pushnotification",
+    "default": "notify-pushnotification"
   }
 }

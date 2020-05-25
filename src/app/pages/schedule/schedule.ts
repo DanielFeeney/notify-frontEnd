@@ -9,6 +9,7 @@ import { PublicacaoService } from '../../../services/domain/publicacao.service';
 import { FavoritosService } from '../../../services/domain/favoritos.service';
 import { StorageService } from '../../../services/application/storage.service';
 import { CreatePublicacao } from '../create-publicacao/createPublicacao';
+import { PublicacaoDTO } from '../../../models/publicacao.dto';
 
 @Component({
   selector: 'page-schedule',
@@ -29,9 +30,11 @@ export class SchedulePage implements OnInit {
   confDate: string;
   showSearchbar: boolean;
   publications: any[] = [];
+  publicationsAux : any[] = []
   favorites: any[] = [];
   cpf : string;
   pages : number = 0;
+  publicar : Boolean = false;
 
   constructor(
     public alertCtrl: AlertController,
@@ -57,32 +60,33 @@ export class SchedulePage implements OnInit {
     else{
       this.cpf = verifica.cpf;
     }
+
+    this.PublicacaoService.criacao(this.cpf).subscribe(x =>
+      this.publicar = x)
+    
     this.updateSchedule();
 
     this.ios = this.config.get('mode') === 'ios';
   }
 
-  updateSchedule() {
-    // Close any open sliding items when the schedule updates
-    if (this.scheduleList) {
-      this.scheduleList.closeSlidingItems();
-    }
-
-    
+  updateSchedule() {    
 
     if(this.segment === 'all'){
       this.PublicacaoService.findAll(this.cpf, this.pages, 10).subscribe((data: any) => {
-        this.publications = this.publications.concat(data) ;
+        this.publications = data ;
+        this.publicationsAux = data;
       })
     }
     else{
       this.PublicacaoService.getFavoritos(this.cpf).subscribe((data: any) => {
-        this.favorites = data;
-        this.publications = []
+        this.publications = data;
+        this.publicationsAux = data;
         this.pages = 0;
       })
     } 
   }
+
+  
 
   async deleteFav(slidingItem: HTMLIonItemSlidingElement, idPublication: Number, title: string){
     const alert = await this.alertCtrl.create({
@@ -177,7 +181,9 @@ export class SchedulePage implements OnInit {
 
   doInfinite(infiniteScrool){
     this.pages += 10;
-    this.updateSchedule();
+    this.PublicacaoService.findAll(this.cpf, this.pages, 10).subscribe((data: any) => {
+      this.publications = data ;
+    })
     setTimeout(() =>
     {
       infiniteScrool.target.complete();
@@ -191,5 +197,21 @@ export class SchedulePage implements OnInit {
     setTimeout(() =>{
       refresher.target.complete();
     }, 1000)
+  }
+
+  search(){
+    let p = []
+    console.log(this.publicationsAux)
+    this.publications = this.publicationsAux;
+    this.publications.forEach(
+      (x : PublicacaoDTO) =>{
+        if(x.descricao.toUpperCase().includes(this.queryText.toUpperCase()) ||
+          x.subTitulo.toUpperCase().includes(this.queryText.toUpperCase()) ||
+          x.titulo.toUpperCase().includes(this.queryText.toUpperCase())){
+          p.push(x);
+        }
+      }
+    )
+    this.publications = p;
   }
 }

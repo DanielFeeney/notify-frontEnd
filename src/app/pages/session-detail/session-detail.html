@@ -4,6 +4,12 @@
       <ion-back-button [defaultHref]="default"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
+      <ion-button *ngIf="editar">
+        <ion-icon slot="icon-only" name="pencil"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="excluir">
+        <ion-icon slot="icon-only" name="trash"></ion-icon>
+      </ion-button>
       <ion-button (click)="toggleFavorite()">
         <ion-icon *ngIf="!isFavorite" slot="icon-only" name="star-outline"></ion-icon>
         <ion-icon *ngIf="isFavorite" slot="icon-only" name="star"></ion-icon>

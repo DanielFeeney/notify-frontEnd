@@ -17,6 +17,10 @@ import { StorageService } from '../../../services/application/storage.service';
 export class SessionDetailPage {
   session: any;
   isFavorite = false;
+  editar = false;
+  excluir = false;
+
+
   default = '';
   idPublicacao = ''
   cpf : string;
@@ -46,13 +50,21 @@ export class SessionDetailPage {
     this.idPublicacao = this.route.snapshot.paramMap.get('publicacaoId');
     this.PublicacaoService.find(+this.idPublicacao).subscribe((data: PublicacaoDTO) =>{
       this.publicacao = data;
-      console.log(data)
       this.filtros = data.colTag;
     });
 
      this.FavoritosService.find(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>
      this.isFavorite = data
      );
+
+     this.PublicacaoService.edicao(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>{
+       console.log(data)
+       this.editar = data;
+     });
+
+     this.PublicacaoService.delecao(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>{
+       this.excluir = data;
+    });
   }
 
   ionViewDidEnter() {

@@ -7,6 +7,8 @@ import { UserData } from '../../providers/user-data';
 import { UserOptions } from '../../interfaces/user-options';
 import { UsuarioDTO } from '../../../models/usuario.dto';
 import { UsuarioService } from '../../../services/domain/usuario.service';
+import { ToastController } from '@ionic/angular';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 
@@ -18,35 +20,71 @@ import { UsuarioService } from '../../../services/domain/usuario.service';
 export class LoginPage {
   login: UsuarioDTO = {cpf: '', dataNascimento: null, senha: ''}
   submitted = false;
+  mensagem : string;
 
   constructor(
     public userData: UserData,
     public router: Router,
-    public UsuarioService: UsuarioService
+    public UsuarioService: UsuarioService,
+    public toastController: ToastController
   ) { }
 
-  onLogin(form: NgForm) {
+  async onLogin(form: NgForm) {
+    this.mensagem = null;
     this.submitted = true;
 
     if (form.valid) {
       this.UsuarioService.login(this.login).subscribe(
         response => {
+          if(response)
           console.log(response)
           this.UsuarioService.loginSucesso(response.headers.get('Authorization'));
           this.router.navigateByUrl('/app/tabs/schedule');
+        },
+        (error) => {
+          if(error instanceof HttpErrorResponse) {
+             console.log("Status: "+ error.status +", Message: " + error.message)
+             this.mensagem = "Status: "+ error.status +", StatusText: " + error.statusText +", Name: " + error.name+", type: " + error.type+", Message: " + error.message;
+          }
         }
-      )
-      
-    }
-  }
+       )
 
-  onSignup() {
-    this.UsuarioService.login(this.login).subscribe(
+       setTimeout(()=>{
+        }, 500000);
+  
+       if(this.mensagem != null){
+         console.log(this.mensagem)
+        const toast = await this.toastController.create({
+          message: this.mensagem,
+          duration: 2000
+        });
+        await toast.present()
+       }
+      }
+    }
+
+  async onSignup() {
+    let mensagem = null;
+     this.UsuarioService.login(this.login).subscribe(
       response => {
         this.UsuarioService.loginSucesso(response.headers.get('Authorization'));
+        this.router.navigateByUrl('/app/tabs/schedule');
+      },
+      error =>
+      {
+        mensagem = error.error;
       }
-    )
-    this.router.navigateByUrl('/signup');
+     )
+
+     if(mensagem != null){
+      const toast = await this.toastController.create({
+        message: mensagem,
+        duration: 2000
+      });
+     }
+      
+    
+     this.router.navigateByUrl('/signup');
   }
 
   ionViewDidEnter(){

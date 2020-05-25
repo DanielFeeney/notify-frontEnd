@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.ionicframework.conferenceapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.danielfeeney.notify" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Ionic Conference App</name>
-    <description>Schedule, speakers, venue.</description>
-    <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
+    <description>App voltado para notificar usuários sobre atividades e eventos do IFMS</description>
+    <author email="daniel.feeney.95@gmail.com" href="">Daniel Feeney</author>
     <content src="index.html" />
-    <access origin="*" />
+    <access origin="http://192.168.56.1:8080" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="tel:*" />
