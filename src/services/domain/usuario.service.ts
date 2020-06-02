@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { API_CONFIG } from '../../configuration/api.config';
 import { Observable } from 'rxjs';
 import { UsuarioDTO } from '../../models/usuario.dto';
@@ -14,9 +14,11 @@ export class UsuarioService {
 
     constructor(public http: HttpClient, public StorageService: StorageService){}
 
+    authHeader = new HttpHeaders({'Access-Control-Allow-Origin': '*'})
+
     login(usuario : UsuarioDTO) {
         return this.http.post(
-            `${API_CONFIG.baseUrl}/login`, usuario,
+            `${API_CONFIG.baseUrl}/login`, usuario, 
             {
                 observe: 'response',
                 responseType: 'text'
