@@ -30,7 +30,7 @@
     "@angular/service-worker": "^8.2.14",
     "@auth0/angular-jwt": "^4.0.0",
     "@capacitor/android": "^2.1.0",
-    "@capacitor/core": "2.1.0",
+    "@capacitor/core": "^2.1.0",
     "@ionic-native/camera": "^5.24.0",
     "@ionic-native/core": "5.0.0-beta.15",
     "@ionic-native/in-app-browser": "5.0.0-beta.15",
@@ -59,14 +59,14 @@
   },
   "devDependencies": {
     "@angular-devkit/architect": "^0.803.23",
-    "@angular-devkit/build-angular": "^0.803.23",
+    "@angular-devkit/build-angular": "^0.803.26",
     "@angular-devkit/core": "^8.3.23",
     "@angular-devkit/schematics": "^8.3.23",
     "@angular/cli": "^8.3.23",
     "@angular/compiler": "^8.2.14",
     "@angular/compiler-cli": "^8.2.14",
     "@angular/language-service": "^8.2.14",
-    "@capacitor/cli": "2.1.0",
+    "@capacitor/cli": "^2.1.0",
     "@ionic/angular-toolkit": "^2.1.2",
     "@ionic/lab": "^2.0.19",
     "@types/jasmine": "3.4.6",
@@ -89,8 +89,8 @@
   "cordova": {
     "platforms": [
       "ios",
-      "android",
-      "browser"
+      "browser",
+      "android"
     ],
     "plugins": {
       "cordova-plugin-device": {},

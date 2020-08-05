@@ -8,6 +8,7 @@ import { PublicacaoService } from '../../../services/domain/publicacao.service';
 import { PublicacaoDTO } from '../../../models/publicacao.dto';
 import { FavoritosService } from '../../../services/domain/favoritos.service';
 import { StorageService } from '../../../services/application/storage.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'page-session-detail',
@@ -29,6 +30,7 @@ export class SessionDetailPage {
   publicacao: PublicacaoDTO;
 
   constructor(
+    public alertCtrl: AlertController,
     private dataProvider: ConferenceData,
     private userProvider: UserData,
     private route: ActivatedRoute,
@@ -79,6 +81,27 @@ export class SessionDetailPage {
     else{
       this.isFavorite = true;
       this.FavoritosService.save(+this.idPublicacao, this.cpf).subscribe()
+    }
+  }
+
+  async toggleDelete() {
+    if(this.excluir){
+      const alert = await this.alertCtrl.create({
+        header: "Deletar a publicação",
+        message: 'Você gostaria de deletar essa publicação?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            
+          },
+          {
+            text: 'Deletar',
+            
+          }
+        ]
+      });
+      // now present the alert on top of all other content
+      await alert.present();
     }
   }
 }
