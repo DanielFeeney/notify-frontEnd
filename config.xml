@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.danielfeeney.notify" version="1.0" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0%22%3E">
-    <name>Ionic Conference App</name>
+    <name>IFMS Notify App</name>
     <description>App voltado para notificar usuários sobre atividades e eventos do IFMS</description>
     <author email="daniel.feeney.95@gmail.com" href="">Daniel Feeney</author>
     <content src="index.html" />

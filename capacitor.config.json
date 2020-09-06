@@ -1,9 +1,10 @@
 {
   "appId": "io.ionic.starter",
-  "appName": "ionic-conference-app",
+  "appName": "ifms-notify-app",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
+  "windowsAndroidStudioPath": "D:\\Android Studio\\bin\\studio64.exe",
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0

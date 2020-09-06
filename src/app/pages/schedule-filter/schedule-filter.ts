@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Config, ModalController, NavParams } from '@ionic/angular';
 
-import { ConferenceData } from '../../providers/conference-data';
 import { TagService } from '../../../services/domain/tag.service';
 import { TagDTO } from '../../../models/tag.dto';
 import { Router } from '@angular/router';
@@ -21,7 +20,6 @@ export class ScheduleFilterPage {
   cpf : string;
 
   constructor(
-    public confData: ConferenceData,
     private config: Config,
     public modalCtrl: ModalController,
     private storage: StorageService,

@@ -4,8 +4,8 @@
       <ion-back-button [defaultHref]="default"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button *ngIf="editar">
-        <ion-icon slot="icon-only" name="pencil"></ion-icon>
+      <ion-button (click)="toggleEdit()">
+        <ion-icon *ngIf="editar" slot="icon-only" name="pencil"></ion-icon>
       </ion-button>
       <ion-button (click)="toggleDelete()">
         <ion-icon *ngIf="excluir" slot="icon-only" name="trash"></ion-icon>

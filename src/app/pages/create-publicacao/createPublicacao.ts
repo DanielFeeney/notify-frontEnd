@@ -10,7 +10,6 @@ import { PhotoService } from '../../../services/application/photo.service';
 import { PublicacaoService } from '../../../services/domain/publicacao.service';
 import { StorageService } from '../../../services/application/storage.service';
 import { Router } from '@angular/router';
-import { CameraOptions, Camera } from '@ionic-native/camera/ngx';
 import {storage, initializeApp} from 'firebase'
 import { firebaseConfig } from '../../../services/application/firebase.configutation';
 
@@ -19,11 +18,8 @@ import { firebaseConfig } from '../../../services/application/firebase.configuta
   templateUrl: 'createPublicacao.html',
 })
 export class CreatePublicacao {
-
-
-
-  publicacao: PublicacaoDTO =  {id: null, titulo : '', subTitulo: '', descricao: '', dataCriacao: new Date(), imagem: '', colTag: [], cpfUsuario: null};
-  photo: string;
+  photo = this.photoService.photo;
+  publicacao: PublicacaoDTO;
   cameraOn: boolean = false;
 
   ios: boolean;
@@ -38,8 +34,7 @@ export class CreatePublicacao {
     private config: Config,
     public router: Router,
     private PublicacaoService: PublicacaoService,
-    private toastController: ToastController,
-    public camera: Camera) { 
+    private toastController: ToastController) { 
 
       initializeApp(firebaseConfig);
 
@@ -54,15 +49,21 @@ export class CreatePublicacao {
     else{
       cpf = verifica.cpf;
     }
+    if(this.publicacao == null){
+      this.publicacao =  {id: null, titulo : '', subTitulo: '', descricao: '', dataCriacao: new Date(), imagem: '', colTagDTO: [], cpfUsuario: null}
+      this.TagService.allTags().subscribe((filtros: any[]) => {
+        this.publicacao.colTagDTO = filtros;
+      });      
+    }
+    else{
+      this.TagService.findAllByPublicacao(+this.publicacao.id).subscribe((filtros: any[]) => {
+        this.publicacao.colTagDTO = filtros;
+      });
+    }
     this.publicacao.cpfUsuario = cpf;
     this.ios = this.config.get('mode') === `ios`;
 
-    this.photoService.loadSaved();
-
-    this.TagService.allTags().subscribe((filtros: any[]) => {
-      console.log(filtros)
-      this.publicacao.colTag = filtros;
-    });
+    
   }
 
   async save(){
@@ -83,7 +84,7 @@ export class CreatePublicacao {
       return;
     }
     let verificaSelecionado = false;
-    this.publicacao.colTag.forEach(tag => {
+    this.publicacao.colTagDTO.forEach(tag => {
       if(tag.selecionado){
         verificaSelecionado = true;
       }
@@ -106,23 +107,8 @@ export class CreatePublicacao {
 
   getCameraPhoto(){
     this.cameraOn = true;
-    const options: CameraOptions = {
-      quality: 100,
-      destinationType: this.camera.DestinationType.DATA_URL,
-      encodingType: this.camera.EncodingType.PNG,
-      mediaType: this.camera.MediaType.PICTURE
-    }
     
-    this.camera.getPicture(options).then((imageData) => {
-    this.photo = 'data:image/png;base64,' + imageData;
-    const pictures = storage().ref('pictures');
-    pictures.putString(this.photo, 'data_url');
-
-
-    this.cameraOn = false;
-    }, (err) => {
-     // Handle error
-    });
+    this.photoService.addNewToGallery()
   }
 
 }

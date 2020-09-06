@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { API_CONFIG } from '../../configuration/api.config';
 import { Observable } from 'rxjs';
 import { PublicacaoDTO } from '../../models/publicacao.dto';
@@ -32,26 +32,16 @@ export class PublicacaoService {
         {'headers': this.authHeader});
     }
 
-    criacao(cpf: String):  Observable<Boolean> {
-        return this.http.get<Boolean>(`${API_CONFIG.baseUrl}/usuario/criacao/${cpf}`,
-        {'headers': this.authHeader});
-    }
-
-    edicao(idPublicacao : Number ,cpf: string):  Observable<Boolean> {
+    delete(idPublicacao: Number) {
         const formData = new FormData();
         formData.append('idPublicacao', idPublicacao.toString());
-        formData.append('cpf', cpf);
-        return this.http.post<Boolean>(`${API_CONFIG.baseUrl}/usuario/edicao`, formData,
-        {'headers': this.authHeader});
+        
+        const request = new HttpRequest('POST', `${API_CONFIG.baseUrl}/publicacao/delete`, formData,
+        {'headers': this.authHeader})
+        return this.http.request(request);
     }
 
-    delecao(idPublicacao : Number ,cpf: string):  Observable<Boolean> {
-        const formData = new FormData();
-        formData.append('idPublicacao', idPublicacao.toString());
-        formData.append('cpf', cpf);
-        return this.http.post<Boolean>(`${API_CONFIG.baseUrl}/usuario/delecao`, formData,
-        {'headers': this.authHeader});
-    }
+    
 
 
 }

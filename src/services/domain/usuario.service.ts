@@ -16,6 +16,8 @@ export class UsuarioService {
 
     authHeader = new HttpHeaders({'Access-Control-Allow-Origin': '*'})
 
+    
+
     login(usuario : UsuarioDTO) {
         return this.http.post(
             `${API_CONFIG.baseUrl}/login`, usuario, 
@@ -46,5 +48,34 @@ export class UsuarioService {
 
     logout(){
         this.StorageService.setLocalUser(null);
+    }
+
+    criacao(cpf: string):  Observable<Boolean> {
+        let token = this.StorageService.getLocalUser().token
+        let authHeader2 = new HttpHeaders({"Authorization": "Bearer " + token})
+        const formData = new FormData();
+        formData.append('cpf', cpf);
+        return this.http.post<Boolean>(`${API_CONFIG.baseUrl}/usuario/criacao`, formData,
+        {'headers': authHeader2});
+    }
+
+    edicao(idPublicacao : Number ,cpf: string):  Observable<Boolean> {
+        let token = this.StorageService.getLocalUser().token
+        let authHeader2 = new HttpHeaders({"Authorization": "Bearer " + token})
+        const formData = new FormData();
+        formData.append('idPublicacao', idPublicacao.toString());
+        formData.append('cpf', cpf);
+        return this.http.post<Boolean>(`${API_CONFIG.baseUrl}/usuario/edicao`, formData,
+        {'headers': authHeader2});
+    }
+
+    delecao(idPublicacao : Number ,cpf: string):  Observable<Boolean> {
+        let token = this.StorageService.getLocalUser().token
+        let authHeader2 = new HttpHeaders({"Authorization": "Bearer " + token})
+        const formData = new FormData();
+        formData.append('idPublicacao', idPublicacao.toString());
+        formData.append('cpf', cpf);
+        return this.http.post<Boolean>(`${API_CONFIG.baseUrl}/usuario/delecao`, formData,
+        {'headers': authHeader2});
     }
 }

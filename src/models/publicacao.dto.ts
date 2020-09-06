@@ -8,5 +8,5 @@ export interface PublicacaoDTO{
     imagem: string;
     dataCriacao: Date;
     cpfUsuario: string;
-    colTag: TagDTO[]
+    colTagDTO: TagDTO[]
 }

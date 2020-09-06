@@ -15,7 +15,7 @@ export class FavoritosService {
     save(idPublicacao : Number, cpf : string) {
         const formData = new FormData();
         formData.append('idPublicacao', idPublicacao.toString());
-        formData.append('idUsuario', cpf);
+        formData.append('cpf', cpf);
         
         const request = new HttpRequest('POST', `${API_CONFIG.baseUrl}/favoritos/save`, formData,
         {'headers': this.authHeader})
@@ -25,7 +25,7 @@ export class FavoritosService {
     delete(idPublicacao : Number, cpf : string) {
         const formData = new FormData();
         formData.append('idPublicacao', idPublicacao.toString());
-        formData.append('idUsuario', cpf);
+        formData.append('cpf', cpf);
         
         const request = new HttpRequest('POST', `${API_CONFIG.baseUrl}/favoritos/delete`, formData,
         {'headers': this.authHeader})

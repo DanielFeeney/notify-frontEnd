@@ -18,6 +18,11 @@ export class TagService {
         {'headers': this.authHeader});
     }
 
+    findAllByPublicacao(idPublicacao : number): Observable<TagDTO[]> {
+        return this.http.get<TagDTO[]>(`${API_CONFIG.baseUrl}/tag/publicacao/${idPublicacao}`,
+        {'headers': this.authHeader});
+    }
+
     allTags(): Observable<TagDTO[]> {
         console.log("ta aqui")
         return this.http.get<TagDTO[]>(`${API_CONFIG.baseUrl}/tag`,

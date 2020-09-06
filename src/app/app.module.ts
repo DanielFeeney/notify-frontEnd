@@ -20,6 +20,7 @@ import { UsuarioService } from '../services/domain/usuario.service';
 import { StorageService } from '../services/application/storage.service';
 import { AuthInterceptorProvider } from '../Interceptors/auth.interceptor';
 import { ErrorInterceptorProvider } from '../Interceptors/error.interceptor';
+import { MessageService } from '../services/domain/message.service';
 
 @NgModule({
   imports: [
@@ -36,7 +37,7 @@ import { ErrorInterceptorProvider } from '../Interceptors/error.interceptor';
   declarations: [AppComponent],
   providers: [
   InAppBrowser, SplashScreen, StatusBar,
-  TagService, PublicacaoService, 
+  TagService, PublicacaoService, MessageService,
   FavoritosService, Camera,
   UsuarioService, StorageService],
   bootstrap: [AppComponent]

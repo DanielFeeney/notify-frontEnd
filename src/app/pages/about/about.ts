@@ -10,12 +10,7 @@ import { PopoverPage } from '../about-popover/about-popover';
   styleUrls: ['./about.scss'],
 })
 export class AboutPage {
-  location = 'madison';
-  conferenceDate = '2047-05-17';
-
-  selectOptions = {
-    header: 'Select a Location'
-  };
+  location = 'CampoGrande';
 
   constructor(public popoverCtrl: PopoverController) { }
 

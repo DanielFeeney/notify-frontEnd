@@ -1,47 +1,30 @@
-import { Injectable } from '@angular/core';
-import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
-import { Storage } from '@ionic/storage';
+import { Plugins, CameraResultType, Capacitor, FilesystemDirectory, 
+  CameraPhoto, CameraSource } from '@capacitor/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+const { Camera, Filesystem, Storage } = Plugins;
+
 export class PhotoService {
 
-  public photos: Photo[] = [];
+  public photo: Photo;
 
-  constructor(private camera: Camera, private storage: Storage) { }
-
-  takePicture() {
-    const options: CameraOptions = {
-      quality: 100,
-      destinationType: this.camera.DestinationType.DATA_URL,
-      encodingType: this.camera.EncodingType.JPEG,
-      mediaType: this.camera.MediaType.PICTURE
-    }
-    
-    this.camera.getPicture(options).then((imageData) => {
-      // Add new photo to gallery
-      this.photos.unshift({
-        data: 'data:image/jpeg;base64,' + imageData
-      });
-
-      // Save all photos for later viewing
-      this.storage.set('photos', this.photos);
-    }, (err) => {
-     // Handle error
-     console.log("Camera issue: " + err);
+  public async addNewToGallery() {
+    // Take a photo
+    const capturedPhoto = await Camera.getPhoto({
+      resultType: CameraResultType.Uri, 
+      source: CameraSource.Camera, 
+      quality: 100 
     });
-
+  
+    this.photo = {
+      filepath: "soon...",
+      webviewPath: capturedPhoto.webPath
+    };
+  }
+  }
+  
+  interface Photo {
+    filepath: string;
+    webviewPath: string;
+    base64?: string;
   }
 
-  loadSaved() {
-    this.storage.get('photos').then((photos) => {
-      this.photos = photos || [];
-    });
-  }
-
-}
-
-class Photo {
-  data: any;
-}

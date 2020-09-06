@@ -3,13 +3,12 @@ import { Router } from '@angular/router';
 import { AlertController, IonList, IonRouterOutlet, LoadingController, ModalController, ToastController, Config } from '@ionic/angular';
 
 import { ScheduleFilterPage } from '../schedule-filter/schedule-filter';
-import { ConferenceData } from '../../providers/conference-data';
-import { UserData } from '../../providers/user-data';
 import { PublicacaoService } from '../../../services/domain/publicacao.service';
 import { FavoritosService } from '../../../services/domain/favoritos.service';
 import { StorageService } from '../../../services/application/storage.service';
 import { CreatePublicacao } from '../create-publicacao/createPublicacao';
 import { PublicacaoDTO } from '../../../models/publicacao.dto';
+import { UsuarioService } from '../../../services/domain/usuario.service';
 
 @Component({
   selector: 'page-schedule',
@@ -38,15 +37,14 @@ export class SchedulePage implements OnInit {
 
   constructor(
     public alertCtrl: AlertController,
-    public confData: ConferenceData,
     public loadingCtrl: LoadingController,
     public modalCtrl: ModalController,
     public router: Router,
     public routerOutlet: IonRouterOutlet,
     public toastCtrl: ToastController,
-    public user: UserData,
     public config: Config,
     private storage: StorageService,
+    public UsuarioService: UsuarioService,
     public PublicacaoService: PublicacaoService,
     public FavoritosService: FavoritosService
   ) { }
@@ -61,7 +59,7 @@ export class SchedulePage implements OnInit {
       this.cpf = verifica.cpf;
     }
 
-    this.PublicacaoService.criacao(this.cpf).subscribe(x =>
+    this.UsuarioService.criacao(this.cpf).subscribe(x =>
       this.publicar = x)
     
     this.updateSchedule();
@@ -167,7 +165,6 @@ export class SchedulePage implements OnInit {
   async abrirCreatePublicacao() {
     const modal = await this.modalCtrl.create({
       component: CreatePublicacao,
-      swipeToClose: true,
       presentingElement: this.routerOutlet.nativeEl
     });
     await modal.present();
