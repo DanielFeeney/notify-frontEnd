@@ -12,15 +12,16 @@ import {FCM} from 'capacitor-fcm';
 export class MessageService {
     constructor(public http: HttpClient,  public storage: StorageService){}
 
-    token = this.storage.getLocalUser().token
-    authHeader = new HttpHeaders({"Authorization": "Bearer " + this.token})
-
     async register( fcm : FCM , allowPersonal: boolean){
+      
+      let token2 = this.storage.getLocalUser().token
+      let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
+
         await Plugins.PushNotifications.register();
         const {token} = await fcm.getToken();
         const formData = new FormData();
         formData.append('token', token);
-        this.http.post(`${API_CONFIG.baseUrl}/message/register`, formData, {'headers': this.authHeader})
+        this.http.post(`${API_CONFIG.baseUrl}/message/register`, formData, {'headers': authHeader})
           .pipe(timeout(10000))
           .subscribe(() => localStorage.setItem('allowPersonal', JSON.stringify(allowPersonal)),
         _ => allowPersonal = !allowPersonal);
@@ -28,11 +29,16 @@ export class MessageService {
       }
 
     async unregister( fcm : FCM, allowPersonal: boolean){
+      
+      let token2 = this.storage.getLocalUser().token
+      let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
+
+      
         await Plugins.PushNotifications.register();
         const {token} = await fcm.getToken();
         const formData = new FormData();
         formData.append('token', token);
-        this.http.post(`${API_CONFIG.baseUrl}/message/unregister`, formData, {'headers': this.authHeader})
+        this.http.post(`${API_CONFIG.baseUrl}/message/unregister`, formData, {'headers': authHeader})
             .pipe(timeout(10000))
             .subscribe(() => localStorage.setItem('allowPersonal', JSON.stringify(allowPersonal)),
         _ => allowPersonal = !allowPersonal);

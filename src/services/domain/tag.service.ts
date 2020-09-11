@@ -9,28 +9,33 @@ import { StorageService } from '../application/storage.service';
 export class TagService {
     constructor(public http: HttpClient, public storage: StorageService){}
 
-    token = this.storage.getLocalUser().token
-    authHeader = new HttpHeaders({"Authorization": "Bearer " + this.token})
     
 
     findAll(cpf : string): Observable<TagDTO[]> {
+        let token = this.storage.getLocalUser().token
+        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
         return this.http.get<TagDTO[]>(`${API_CONFIG.baseUrl}/tag/${cpf}`,
-        {'headers': this.authHeader});
+        {'headers': authHeader});
     }
 
     findAllByPublicacao(idPublicacao : number): Observable<TagDTO[]> {
+        let token = this.storage.getLocalUser().token
+        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
         return this.http.get<TagDTO[]>(`${API_CONFIG.baseUrl}/tag/publicacao/${idPublicacao}`,
-        {'headers': this.authHeader});
+        {'headers': authHeader});
     }
 
     allTags(): Observable<TagDTO[]> {
-        console.log("ta aqui")
+        let token = this.storage.getLocalUser().token
+        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
         return this.http.get<TagDTO[]>(`${API_CONFIG.baseUrl}/tag`,
-        {'headers': this.authHeader});
+        {'headers': authHeader});
     }
 
     save(tags: TagDTO[]) : Observable<TagDTO[]> {
+        let token = this.storage.getLocalUser().token
+        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
         return this.http.post<TagDTO[]>(`${API_CONFIG.baseUrl}/tag`, tags,
-        {'headers': this.authHeader});
+        {'headers': authHeader});
     }
 }

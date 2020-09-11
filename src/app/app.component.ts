@@ -110,7 +110,7 @@ export class AppComponent implements OnInit {
   checkLoginStatus() {
     let verifica = this.storage.getLocalUser()
     
-    if(!verifica.token){
+    if(!verifica && !verifica.token){
       return this.updateLoggedInStatus(false);
     }
     else{

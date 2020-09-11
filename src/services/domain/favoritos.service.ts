@@ -9,31 +9,37 @@ import { StorageService } from '../application/storage.service';
 export class FavoritosService {
     constructor(public http: HttpClient, public storage: StorageService){}
 
-    token = this.storage.getLocalUser().token
-    authHeader = new HttpHeaders({"Authorization": "Bearer " + this.token})
-
     save(idPublicacao : Number, cpf : string) {
+        let token = this.storage.getLocalUser().token
+        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
+
         const formData = new FormData();
         formData.append('idPublicacao', idPublicacao.toString());
         formData.append('cpf', cpf);
         
         const request = new HttpRequest('POST', `${API_CONFIG.baseUrl}/favoritos/save`, formData,
-        {'headers': this.authHeader})
+        {'headers': authHeader})
         return this.http.request(request);
     }
 
     delete(idPublicacao : Number, cpf : string) {
+        let token = this.storage.getLocalUser().token
+        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
+
         const formData = new FormData();
         formData.append('idPublicacao', idPublicacao.toString());
         formData.append('cpf', cpf);
         
         const request = new HttpRequest('POST', `${API_CONFIG.baseUrl}/favoritos/delete`, formData,
-        {'headers': this.authHeader})
+        {'headers': authHeader})
         return this.http.request(request);
     }
 
     find(idPublicacao : Number, cpf : string): Observable<Boolean> {
+        let token = this.storage.getLocalUser().token
+        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
+
         return this.http.get<Boolean>(`${API_CONFIG.baseUrl}/favoritos/verificar/${idPublicacao}/${cpf}`,
-        {'headers': this.authHeader});
+        {'headers': authHeader});
     }
 }

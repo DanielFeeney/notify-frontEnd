@@ -38,8 +38,9 @@ import { MessageService } from '../services/domain/message.service';
   providers: [
   InAppBrowser, SplashScreen, StatusBar,
   TagService, PublicacaoService, MessageService,
+  StorageService,
   FavoritosService, Camera,
-  UsuarioService, StorageService],
+  UsuarioService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

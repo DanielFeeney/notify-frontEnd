@@ -37,10 +37,10 @@ export class UsuarioService {
     }
 
     loginSucesso(authorizationValue: string){
-        let toke = authorizationValue.substring(7);
+        let token = authorizationValue.substring(7);
         let user: LocalUser = {
-            token: toke,
-            cpf: this.jwtHelper.decodeToken(toke).sub
+            token: token,
+            cpf: this.jwtHelper.decodeToken(token).sub
 
         };
         this.StorageService.setLocalUser(user)
@@ -51,7 +51,7 @@ export class UsuarioService {
     }
 
     criacao(cpf: string):  Observable<Boolean> {
-        let token = this.StorageService.getLocalUser().token
+        let token = this.StorageService.getLocalUser().token == null ? null : this.StorageService.getLocalUser().token;
         let authHeader2 = new HttpHeaders({"Authorization": "Bearer " + token})
         const formData = new FormData();
         formData.append('cpf', cpf);
@@ -60,7 +60,7 @@ export class UsuarioService {
     }
 
     edicao(idPublicacao : Number ,cpf: string):  Observable<Boolean> {
-        let token = this.StorageService.getLocalUser().token
+        let token = this.StorageService.getLocalUser().token == null ? null : this.StorageService.getLocalUser().token;
         let authHeader2 = new HttpHeaders({"Authorization": "Bearer " + token})
         const formData = new FormData();
         formData.append('idPublicacao', idPublicacao.toString());
@@ -70,7 +70,7 @@ export class UsuarioService {
     }
 
     delecao(idPublicacao : Number ,cpf: string):  Observable<Boolean> {
-        let token = this.StorageService.getLocalUser().token
+        let token = this.StorageService.getLocalUser().token == null ? null : this.StorageService.getLocalUser().token;
         let authHeader2 = new HttpHeaders({"Authorization": "Bearer " + token})
         const formData = new FormData();
         formData.append('idPublicacao', idPublicacao.toString());
