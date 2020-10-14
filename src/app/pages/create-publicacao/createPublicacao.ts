@@ -1,7 +1,4 @@
-import { Component } from '@angular/core';
-
 import { PopoverController, ToastController, ModalController, NavParams, Config } from '@ionic/angular';
-
 import { PopoverPage } from '../about-popover/about-popover';
 import { PublicacaoDTO } from '../../../models/publicacao.dto';
 import { TagDTO } from '../../../models/tag.dto';
@@ -12,29 +9,38 @@ import { StorageService } from '../../../services/application/storage.service';
 import { Router } from '@angular/router';
 import {storage, initializeApp} from 'firebase'
 import { firebaseConfig } from '../../../services/application/firebase.configutation';
+import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Plugins, CameraResultType, CameraSource, Capacitor } from '@capacitor/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Platform } from '@ionic/angular';
+const { Camera } = Plugins;
 
 @Component({
   selector: 'create-publicacao',
   templateUrl: 'createPublicacao.html',
 })
 export class CreatePublicacao {
-  photo = this.photoService.photo;
   publicacao: PublicacaoDTO;
   cameraOn: boolean = false;
 
   ios: boolean;
 
+  @ViewChild('filePicker', { static: false }) filePickerRef: ElementRef<HTMLInputElement>;
+  photo: SafeResourceUrl;
+  isDesktop: boolean;
+
   
 
   constructor(public popoverCtrl: PopoverController,
     private TagService: TagService,
-    private photoService: PhotoService,
     private storage: StorageService,
     public modalCtrl: ModalController,
     private config: Config,
     public router: Router,
     private PublicacaoService: PublicacaoService,
-    private toastController: ToastController) { 
+    private toastController: ToastController,
+    private platform: Platform,
+    private sanitizer: DomSanitizer) { 
 
       initializeApp(firebaseConfig);
 
@@ -62,7 +68,9 @@ export class CreatePublicacao {
     }
     this.publicacao.cpfUsuario = cpf;
     this.ios = this.config.get('mode') === `ios`;
-
+    if ((this.platform.is('mobile') && this.platform.is('hybrid')) || this.platform.is('desktop')) {
+      this.isDesktop = true;
+    }
     
   }
 
@@ -105,10 +113,67 @@ export class CreatePublicacao {
     this.modalCtrl.dismiss(data);
   }
 
-  getCameraPhoto(){
-    this.cameraOn = true;
-    
-    this.photoService.addNewToGallery()
+  // getCameraPhoto(){
+
+  //   this.cameraOn = true;
+
+  //   Camera.getPicture(
+  //     { 
+  //       quality: 100,
+  //       destinationType: Camera.DestinationType.DATA_URL,
+  //       encodingType: Camera.EncodingType.JPEG,
+  //       mediaType: Camera.MediaType.PICTURE,
+  //     }).then((imageData) => {
+  //       this.onSuccess(imageData)
+  //     },
+  //     (err) => {
+  //       this.onFail(err.error)
+  //     })
+  // }
+
+  // onSuccess(imageData) {
+  //   var image = document.getElementById('myImage');
+  //   this.photo = "data:image/jpeg;base64," + imageData;
+  //   this.cameraOn = false;
+  // }
+
+  // onFail(message) {
+  //   alert('Camera falhou: ' + message);
+  //   this.cameraOn = false;
+  // }
+
+  async getPicture(type: string) {
+    if (!Capacitor.isPluginAvailable('Camera') || (this.isDesktop && type === 'gallery')) {
+      this.filePickerRef.nativeElement.click();
+      return;
+    }
+
+    const image = await Camera.getPhoto({
+      quality: 100,
+      width: 400,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Prompt
+    });
+
+    this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+  }
+
+  onFileChoose(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+    const pattern = /image-*/;
+    const reader = new FileReader();
+
+    if (!file.type.match(pattern)) {
+      console.log('File format not supported');
+      return;
+    }
+
+    reader.onload = () => {
+      this.photo = reader.result.toString();
+    };
+    reader.readAsDataURL(file);
+
   }
 
 }

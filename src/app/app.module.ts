@@ -21,6 +21,8 @@ import { StorageService } from '../services/application/storage.service';
 import { AuthInterceptorProvider } from '../Interceptors/auth.interceptor';
 import { ErrorInterceptorProvider } from '../Interceptors/error.interceptor';
 import { MessageService } from '../services/domain/message.service';
+import { HTTP } from '@ionic-native/http/ngx';
+import { PhotoService } from '../services/application/photo.service';
 
 @NgModule({
   imports: [
@@ -39,7 +41,8 @@ import { MessageService } from '../services/domain/message.service';
   InAppBrowser, SplashScreen, StatusBar,
   TagService, PublicacaoService, MessageService,
   StorageService,
-  FavoritosService, Camera,
+  FavoritosService, PhotoService,
+  HTTP,
   UsuarioService],
   bootstrap: [AppComponent]
 })

@@ -5,7 +5,6 @@ import { IonicModule } from '@ionic/angular';
 
 import { CreatePublicacao } from './createPublicacao';
 import { CreatePublicacaoRoutingModule } from './createPublicacao-routing.module';
-import { Camera } from '@ionic-native/camera/ngx';
 
 @NgModule({
   imports: [
@@ -15,7 +14,6 @@ import { Camera } from '@ionic-native/camera/ngx';
     CreatePublicacaoRoutingModule
   ],
   providers: [
-    Camera
   ],
   declarations: [CreatePublicacao],
   bootstrap: [CreatePublicacao],

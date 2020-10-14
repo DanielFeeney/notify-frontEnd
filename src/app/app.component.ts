@@ -8,7 +8,10 @@ import { UsuarioService } from '../services/domain/usuario.service';
 import { StorageService } from '../services/application/storage.service';
 import { LocalNotificationActionPerformed, Plugins, PushNotificationActionPerformed, registerWebPlugin, Capacitor } from '@capacitor/core'
 import {FCM} from 'capacitor-fcm';
+import {timeout} from 'rxjs/operators';
 import { MessageService } from '../services/domain/message.service';
+import { API_CONFIG } from '../configuration/api.config';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 const { PushNotifications } = Plugins;
 
 const fcm = new FCM();
@@ -54,7 +57,7 @@ export class AppComponent implements OnInit {
     private toastCtrl: ToastController,
     public usuarioService: UsuarioService,
     private readonly changeDetectorRef: ChangeDetectorRef,
-    private MessageService: MessageService
+    private http: HttpClient,
   ) {
     this.initializeApp();
 
@@ -133,11 +136,33 @@ export class AppComponent implements OnInit {
 
 
   async register() {
-    this.allowPersonal = await this.MessageService.register(fcm, this.allowPersonal);
+    let token2 = this.storage.getLocalUser().token
+    let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
+
+
+    await Plugins.PushNotifications.register();
+    const {token} = await fcm.getToken();
+    const formData = new FormData();
+    formData.append('token', token);
+    this.http.post(`${API_CONFIG.baseUrl}/message/register`, formData, {'headers': authHeader})
+      .pipe(timeout(10000))
+      .subscribe(() => localStorage.setItem('allowPersonal', JSON.stringify(this.allowPersonal)),
+        _ => this.allowPersonal = !this.allowPersonal);
   }
 
   async unregister() {
-    this.allowPersonal = await this.MessageService.unregister(fcm, this.allowPersonal)
+    let token2 = this.storage.getLocalUser().token
+    let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
+
+
+    await Plugins.PushNotifications.register();
+    const {token} = await fcm.getToken();
+    const formData = new FormData();
+    formData.append('token', token);
+    this.http.post(`${API_CONFIG.baseUrl}/message/unregister`, formData, {'headers': authHeader})
+      .pipe(timeout(10000))
+      .subscribe(() => localStorage.setItem('allowPersonal', JSON.stringify(this.allowPersonal)),
+        _ => this.allowPersonal = !this.allowPersonal);
   }
 
   onChange() {

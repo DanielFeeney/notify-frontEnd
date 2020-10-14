@@ -16,7 +16,8 @@
     <ion-list>
       <ion-item>
         <ion-label position="stacked" color="primary">CPF</ion-label>
-        <ion-input [(ngModel)]="login.cpf" name="cpf" type="text" #cpf="ngModel" spellcheck="false" autocapitalize="off"
+        <ion-input ></ion-input>
+        <ion-input [(ngModel)]="login.cpf" name="cpf" type="text" #cpf="ngModel" maxlength="14" (ngModelChange)="format($event)"
           required>
         </ion-input>
       </ion-item>

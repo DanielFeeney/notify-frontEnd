@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { PopoverController } from '@ionic/angular';
+import { Config, PopoverController } from '@ionic/angular';
 
 import { PopoverPage } from '../about-popover/about-popover';
 
@@ -12,13 +12,16 @@ import { PopoverPage } from '../about-popover/about-popover';
 export class AboutPage {
   location = 'CampoGrande';
 
-  constructor(public popoverCtrl: PopoverController) { }
+  ios: boolean;
+
+  constructor(public popoverCtrl: PopoverController, public config: Config) { }
 
   async presentPopover(event: Event) {
     const popover = await this.popoverCtrl.create({
       component: PopoverPage,
       event
     });
+    this.ios = this.config.get('mode') === 'ios';
     await popover.present();
   }
 }

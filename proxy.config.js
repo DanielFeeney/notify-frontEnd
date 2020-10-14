@@ -8,4 +8,4 @@ const proxy = [
       pathRewrite: { '^/api-externa': '' }
     }
   ]
-  module.exports = proxy
+  //module.exports = proxy

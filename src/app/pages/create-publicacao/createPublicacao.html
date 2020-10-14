@@ -35,16 +35,22 @@
           <ion-textarea [(ngModel)]="publicacao.descricao" name="descricao" type="text" spellcheck="false" autocapitalize="off"></ion-textarea>
         </ion-item>
 
-        <ion-card>
-          <ion-card-header>
-            Incluir imagem
-          </ion-card-header>
-          <ion-item *ngIf="photo.webviewPath">
-            <ion-img src="{{ photo.webviewPath }}"></ion-img>
-        </ion-item>
         <ion-item>
-          <button ion-button block (click)="getCameraPhoto()" [disabled]="cameraOn">Camera</button>
+          <!-- <ion-button size="small" (click)="getPicture('camera')">
+            <ion-icon name="camera" slot="start"></ion-icon>
+            <ion-label>Camera</ion-label>
+          </ion-button> -->
+          <ion-button size="small" (click)="getPicture('gallery')">
+            <ion-icon name="image" slot="start"></ion-icon>
+            <ion-label>Gallery</ion-label>
+          </ion-button>
+          <input type="file" *ngIf="isDesktop" #filePicker (change)="onFileChoose($event)"/>
         </ion-item>
+
+        <ion-card *ngIf="photo">
+          <ion-card-content>
+            <img [src]="photo">
+          </ion-card-content>
         </ion-card>
 
         <ion-list [lines]="ios ? 'inset' : 'full'">
