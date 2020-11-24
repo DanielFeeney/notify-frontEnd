@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
-import { API_CONFIG } from '../../../../notify/tcc/src/configuration/api.config';
 import { Observable } from 'rxjs';
 import { LocalNotificationActionPerformed, Plugins, PushNotificationActionPerformed } from '@capacitor/core'
 import { StorageService } from '../application/storage.service';
 import {timeout} from 'rxjs/operators';
 import {FCM} from 'capacitor-fcm';
+import { API_CONFIG } from '../../configuration/api.config';
 
 
 @Injectable()

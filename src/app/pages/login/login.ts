@@ -3,9 +3,11 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserOptions } from '../../interfaces/user-options';
 import { UsuarioDTO } from '../../../models/usuario.dto';
-import { UsuarioService } from '../../../services/domain/usuario.service';
-import { ToastController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LoginService } from '../../../services/domain/login.service';
+import { TagService } from '../../../services/domain/tag.service';
+import { AppComponent } from '../../app.component';
 
 
 
@@ -27,36 +29,48 @@ export class LoginPage {
   val: any;
   v: any;
 
+  loading: HTMLIonLoadingElement
+
   constructor(
     public router: Router,
-    public UsuarioService: UsuarioService,
-    public toastController: ToastController
+    public LoginService: LoginService,
+    public toastController: ToastController,
+    public loadingCtrl: LoadingController,
+    public app: AppComponent
   ) { }
 
   async onLogin(form: NgForm) {
     this.mensagem = null;
     this.submitted = true;
 
+    this.loading = await this.loadingCtrl.create({
+      message: 'Entrando...'
+    });
+    await this.loading.present();
+
     if (form.valid) {
       this.login.cpf = this.eraseFormat(this.login.cpf)
-      console.log(this.login.cpf)
-      this.UsuarioService.login(this.login).subscribe(
-        response => {
-          if(response)
-          console.log(response)
-          this.UsuarioService.loginSucesso(response.headers.get('Authorization'));
-          this.router.navigateByUrl('/app/tabs/schedule');
-        },
-        (error) => {
-          if(error instanceof HttpErrorResponse) {
-             console.log("Status: "+ error.status +", Message: " + error.message)
-             this.mensagem = "Status: "+ error.status +", StatusText: " + error.statusText +", Name: " + error.name+", type: " + error.type+", Message: " + error.message;
-          }
-        }
-       )
+      
 
        setTimeout(()=>{
-        }, 500000);
+        this.LoginService.login(this.login).subscribe(
+          response => {
+            if(response)
+            console.log(response)
+            this.LoginService.loginSucesso(response.headers.get('Authorization'));            
+            this.app.checkLoginStatus();
+            this.router.navigateByUrl('/app/tabs/schedule');
+            this.loading.dismiss()
+          },
+          (error) => {
+            if(error instanceof HttpErrorResponse) {
+               console.log("Status: "+ error.status +", Message: " + error.message)
+               this.mensagem = "Status: "+ error.status +", StatusText: " + error.statusText +", Name: " + error.name+", type: " + error.type+", Message: " + error.message;
+            }
+            this.loading.dismiss()
+          }
+         )
+        }, 5000);
   
        if(this.mensagem != null){
          console.log(this.mensagem)
@@ -69,42 +83,42 @@ export class LoginPage {
       }
     }
 
-  async onSignup() {
-    let mensagem = null;
-     this.UsuarioService.login(this.login).subscribe(
-      response => {
-        this.UsuarioService.loginSucesso(response.headers.get('Authorization'));
-        this.router.navigateByUrl('/app/tabs/schedule');
-      },
-      error =>
-      {
-        mensagem = error.error;
-      }
-     )
+  // async onSignup() {
+  //   let mensagem = null;
+  //    this.LoginService.login(this.login).subscribe(
+  //     response => {
+  //       this.LoginService.loginSucesso(response.headers.get('Authorization'));
+  //       this.router.navigateByUrl('/app/tabs/schedule');
+  //     },
+  //     error =>
+  //     {
+  //       mensagem = error.error;
+  //     }
+  //    )
 
-     if(mensagem != null){
-      const toast = await this.toastController.create({
-        message: mensagem,
-        duration: 2000
-      });
-     }
+  //    if(mensagem != null){
+  //     const toast = await this.toastController.create({
+  //       message: mensagem,
+  //       duration: 2000
+  //     });
+  //    }
       
     
-     this.router.navigateByUrl('/signup');
-  }
+  //    this.router.navigateByUrl('/signup');
+  // }
 
   ionViewDidEnter(){
-    // this.UsuarioService.refreshToken().subscribe(
+    // console.log("Aqui")
+    // this.LoginService.refreshToken().subscribe(
     //   response => {
     //     console.log(response)
-    //     this.UsuarioService.loginSucesso(response.headers.get('Authorization'));
+    //     this.LoginService.loginSucesso(response.headers.get('Authorization'));
     //     this.router.navigateByUrl('/app/tabs/schedule');
     //   }
     // )
   }
 
   format() {
-    console.log("dispara")
     if (!this.login.cpf) {
         return '';
     }

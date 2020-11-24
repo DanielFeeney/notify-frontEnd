@@ -8,6 +8,9 @@ import { TabsPageRoutingModule } from './tabs-page-routing.module';
 import { AboutModule } from '../about/about.module';
 import { ScheduleModule } from '../schedule/schedule.module';
 import { SessionDetailModule } from '../session-detail/session-detail.module';
+import { TagsModule } from '../tags/tags.module';
+import { CreateTagModule } from '../create-tag/create-tag.module';
+import { FiltrosModule } from '../filtros/filtros.module';
 
 @NgModule({
   imports: [
@@ -16,7 +19,11 @@ import { SessionDetailModule } from '../session-detail/session-detail.module';
     IonicModule,
     ScheduleModule,
     SessionDetailModule,
-    TabsPageRoutingModule
+    TabsPageRoutingModule,
+    TagsModule,
+    CreateTagModule,
+    FiltrosModule,
+
   ],
   declarations: [
     TabsPage,

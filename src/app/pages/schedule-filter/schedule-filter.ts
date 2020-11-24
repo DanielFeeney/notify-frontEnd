@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { Config, ModalController, NavParams } from '@ionic/angular';
+import { Config, LoadingController, ModalController, NavParams } from '@ionic/angular';
 
 import { TagService } from '../../../services/domain/tag.service';
 import { TagDTO } from '../../../models/tag.dto';
 import { Router } from '@angular/router';
 import { StorageService } from '../../../services/application/storage.service';
+import { FiltrosService } from '../../../services/domain/filtros.service';
 
 
 @Component({
@@ -18,13 +19,15 @@ export class ScheduleFilterPage {
   filtros: TagDTO[] = [];
 
   cpf : string;
+  loading: HTMLIonLoadingElement
 
   constructor(
     private config: Config,
     public modalCtrl: ModalController,
     private storage: StorageService,
     public router: Router,
-    public TagService: TagService
+    public FiltrosService: FiltrosService,
+    public loadingCtrl: LoadingController
   ) { }
 
   ionViewWillEnter() {
@@ -39,7 +42,7 @@ export class ScheduleFilterPage {
       this.cpf = verifica.cpf;
     }
 
-    this.TagService.findAll(this.cpf).subscribe((filtros: any[]) => {
+    this.FiltrosService.findAll(this.cpf).subscribe((filtros: any[]) => {
       this.filtros = filtros;
       this.filtros.forEach(e => e.cpfUsuario = this.cpf)
     });
@@ -51,11 +54,19 @@ export class ScheduleFilterPage {
         });
   }
 
-  salvar() {
-    this.TagService.save(this.filtros).subscribe((filtros: any[]) => {
-      this.filtros = filtros;
+  async salvar() {
+    this.loading = await this.loadingCtrl.create({
+      message: 'Salvando...'
     });
-    this.cancelar();
+    await this.loading.present();
+
+    setTimeout(() => {
+      this.FiltrosService.save(this.filtros).subscribe(() => {
+        this.loading.dismiss();
+        this.cancelar();
+      });      
+    }, 5000)
+    
   }
 
   cancelar(data?: any) {

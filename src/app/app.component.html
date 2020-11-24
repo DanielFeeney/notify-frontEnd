@@ -8,7 +8,7 @@
             Notify
           </ion-list-header>
           <ion-menu-toggle autoHide="false" *ngFor="let p of appPages; let i = index">
-            <ion-item [routerLink]="p.url" routerLinkActive="selected" routerDirection="root" detail="false">
+            <ion-item *ngIf="p.permit" [routerLink]="p.url" routerLinkActive="selected" routerDirection="root" detail="false">
               <ion-icon slot="start" [name]="p.icon + '-outline'"></ion-icon>
               <ion-label>
                 {{p.title}}
@@ -25,7 +25,7 @@
 
           <ion-menu-toggle autoHide="false">
             <ion-item button (click)="logout()" detail="false">
-              <ion-icon slot="start" name="log-out"></ion-icon>
+              <ion-icon slot="start" name="log-out-outline"></ion-icon>
               <ion-label>
                 Deslogar
               </ion-label>
@@ -39,32 +39,23 @@
             Configurações
           </ion-list-header>
 
-          <ion-item>
-            <ion-icon slot="start" name="moon-outline"></ion-icon>
+          <!-- <ion-item>
+            <ion-icon slot="start" name="notifications-outline"></ion-icon>
             <ion-label>
               Notificações
             </ion-label>
-            <ion-toggle (ionChange)="onChange()" [(ngModel)]="allowPush"></ion-toggle>
-          </ion-item>
+            <ion-toggle (ionChange)="onPmChange()" [(ngModel)]="allowPersonal"></ion-toggle>
+          </ion-item> -->
 
-          <ion-item>
-            <ion-icon slot="start" name="moon-outline"></ion-icon>
+          <ion-item [routerLink]="'/app/tabs/filtros'" routerLinkActive="selected" routerDirection="root" detail="false">
+            <ion-icon slot="start" name="notifications-outline"></ion-icon>
             <ion-label>
-              Personal messages
+              Notificações
             </ion-label>
-            <ion-toggle (ionChange)="onChange()" [(ngModel)]="allowPersonal"></ion-toggle>
           </ion-item>
 
-          <ion-list>
-            <ion-item *ngFor="let item of items">
-              <ion-label class="ion-text-wrap">
-                {{item.id}}. {{item.text}}
-              </ion-label>
-            </ion-item>
-          </ion-list>
-
           <ion-item>
-            <ion-icon slot="start" name="moon-outline"></ion-icon>
+            <ion-icon slot="start" name="contrast"></ion-icon>
             <ion-label>
               Dark Mode
             </ion-label>

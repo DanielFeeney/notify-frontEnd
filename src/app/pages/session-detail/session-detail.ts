@@ -8,6 +8,7 @@ import { AlertController, ModalController, IonRouterOutlet } from '@ionic/angula
 import { UsuarioService } from '../../../services/domain/usuario.service';
 import { PublicacaoService } from '../../../services/domain/publicacao.service';
 import { CreatePublicacao } from '../create-publicacao/createPublicacao';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'page-session-detail',
@@ -28,6 +29,8 @@ export class SessionDetailPage {
   filtros: TagDTO[] = [];
   publicacao: PublicacaoDTO;
 
+  imageurl: SafeResourceUrl;
+
   constructor(
     public alertCtrl: AlertController,
     private route: ActivatedRoute,
@@ -37,7 +40,8 @@ export class SessionDetailPage {
     public router: Router,
     public routerOutlet: IonRouterOutlet,
     public PublicacaoService: PublicacaoService,
-    private FavoritosService: FavoritosService
+    private FavoritosService: FavoritosService,
+    private sanitizer: DomSanitizer
   ) { }
 
   ionViewWillEnter() {
@@ -53,6 +57,15 @@ export class SessionDetailPage {
     this.PublicacaoService.find(+this.idPublicacao).subscribe((data: PublicacaoDTO) =>{
       this.publicacao = data;
       this.filtros = data.colTagDTO;
+    });
+
+    this.PublicacaoService.getImage(+this.idPublicacao).subscribe((res) =>{
+      let TYPED_ARRAY = new Uint8Array(res);
+      const STRING_CHAR = TYPED_ARRAY.reduce((data, byte)=> {
+        return data + String.fromCharCode(byte);
+        }, '');
+      let base64String = btoa(STRING_CHAR);
+      this.imageurl = this.sanitizer.bypassSecurityTrustUrl(`data:image/jpg;base64,${base64String}`);
     });
 
      this.FavoritosService.find(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>
@@ -113,7 +126,9 @@ export class SessionDetailPage {
     const modal = await this.modalCtrl.create({
       component: CreatePublicacao,
       componentProps:{
-        publicacao: this.publicacao
+        titulo: "Editar publicação",
+        publicacao: this.publicacao,
+        photo: this.imageurl
       },
       presentingElement: this.routerOutlet.nativeEl
     });

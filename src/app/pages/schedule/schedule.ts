@@ -20,13 +20,11 @@ export class SchedulePage implements OnInit {
   @ViewChild('scheduleList', { static: true }) scheduleList: IonList;
 
   ios: boolean;
-  dayIndex = 0;
   queryText = '';
   segment = 'all';
   excludeTracks: any = [];
   shownSessions: any = [];
   groups: any = [];
-  confDate: string;
   showSearchbar: boolean;
   publications: any[] = [];
   publicationsAux : any[] = []
@@ -125,10 +123,8 @@ export class SchedulePage implements OnInit {
     await modal.present();
 
     const { data } = await modal.onWillDismiss();
-    // if (!data) {
-    //   this.excludeTracks = data;      
-    // }
-    window.location.reload();
+    
+    this.updateSchedule();
   }
 
   async addFavorite(slidingItem: HTMLIonItemSlidingElement, idPublicacao: Number) {
@@ -170,16 +166,15 @@ export class SchedulePage implements OnInit {
     await modal.present();
 
     const { data } = await modal.onWillDismiss();
-    // if (!data) {
-    //   this.excludeTracks = data;      
-    // }
-    window.location.reload();
+    
+    this.updateSchedule();
   }
 
   doInfinite(infiniteScrool){
-    this.pages += 10;
+    this.pages ++;
     this.PublicacaoService.findAll(this.cpf, this.pages, 10).subscribe((data: any) => {
-      this.publications = data ;
+      this.publications = this.publications.concat(data) ;
+      this.publicationsAux = this.publications;
     })
     setTimeout(() =>
     {

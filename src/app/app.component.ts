@@ -4,7 +4,6 @@ import { SwUpdate } from '@angular/service-worker';
 import { MenuController, Platform, ToastController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { UsuarioService } from '../services/domain/usuario.service';
 import { StorageService } from '../services/application/storage.service';
 import { LocalNotificationActionPerformed, Plugins, PushNotificationActionPerformed, registerWebPlugin, Capacitor } from '@capacitor/core'
 import {FCM} from 'capacitor-fcm';
@@ -12,6 +11,8 @@ import {timeout} from 'rxjs/operators';
 import { MessageService } from '../services/domain/message.service';
 import { API_CONFIG } from '../configuration/api.config';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { LoginService } from '../services/domain/login.service';
+import { TagService } from '../services/domain/tag.service';
 const { PushNotifications } = Plugins;
 
 const fcm = new FCM();
@@ -27,24 +28,15 @@ export class AppComponent implements OnInit {
   private readonly TOPIC_NAME = 'chuck';
   items: { id: number, text: string }[] = [];
 
-  allowPush: boolean;
-  allowPersonal: boolean;
+  permissao = false;
 
-  appPages = [
-    {
-      title: 'Publicações',
-      url: '/app/tabs/schedule',
-      icon: 'newspaper'
-    },
-    {
-      title: 'Sobre',
-      url: '/app/tabs/about',
-      icon: 'information-circle'
-    }
 
-  ];
-  loggedIn = true;
+
+  appPages = [];
+  loggedIn = false;
   dark = false;
+
+  isPushNotificationsAvailable: boolean;
 
   constructor(
     private menu: MenuController,
@@ -55,49 +47,29 @@ export class AppComponent implements OnInit {
     private storage: StorageService,
     private swUpdate: SwUpdate,
     private toastCtrl: ToastController,
-    public usuarioService: UsuarioService,
+    public loginService: LoginService,    
+    public TagService: TagService,
     private readonly changeDetectorRef: ChangeDetectorRef,
     private http: HttpClient,
+    private toast: ToastController
   ) {
     this.initializeApp();
 
-    const pushFlag = localStorage.getItem('allowPush');
-    this.allowPush = pushFlag != null ? JSON.parse(pushFlag) : false;
+    // const pushFlag = localStorage.getItem('allowPush');
+    // this.allowPush = pushFlag != null ? JSON.parse(pushFlag) : false;
 
-    const personalFlag = localStorage.getItem('allowPersonal');
-    this.allowPersonal = personalFlag != null ? JSON.parse(personalFlag) : false;
+    // const personalFlag = localStorage.getItem('allowPersonal');
+    // this.allowPersonal = personalFlag != null ? JSON.parse(personalFlag) : false;
 
-    let isPushNotificationsAvailable = Capacitor.isPluginAvailable('PushNotifications');
-      if(isPushNotificationsAvailable){
-        this.initFCM().then(() => {
-          this.onChange();
-          this.onPmChange();
-        });
+    this.isPushNotificationsAvailable = Capacitor.isPluginAvailable('PushNotifications');
+      if(this.isPushNotificationsAvailable){
+        this.initFCM();
       }
-
     
   }
 
   async ngOnInit() {
-    this.checkLoginStatus();
-    this.swUpdate.available.subscribe(async res => {
-      const toast = await this.toastCtrl.create({
-        message: 'Update available!',
-        position: 'bottom',
-        buttons: [
-          {
-            role: 'cancel',
-            text: 'Reload'
-          }
-        ]
-      });
-      await toast.present();
-      toast
-        .onDidDismiss()
-        .then(() => this.swUpdate.activateUpdate())
-        .then(() => window.location.reload());
-    });
-    
+    this.checkLoginStatus();    
   }
 
   initializeApp() {
@@ -113,92 +85,127 @@ export class AppComponent implements OnInit {
   checkLoginStatus() {
     let verifica = this.storage.getLocalUser()
     
-    if(!verifica && !verifica.token){
-      return this.updateLoggedInStatus(false);
+    if(verifica && verifica.token){
+      this.atualizarInformacoes();
+      return this.updateLoggedInStatus(true);
     }
     else{
-     return this.updateLoggedInStatus(true);
+     return this.updateLoggedInStatus(false);
     }
   }
 
   updateLoggedInStatus(loggedIn: boolean) {
     setTimeout(() => {
       this.loggedIn = loggedIn;
+      this.loadPages();
+      console.log(this.permissao)
     }, 300);
   }
 
   logout() {
-    this.usuarioService.logout();
-    return this.router.navigateByUrl('');    
+    this.loginService.logout();
+    return this.router.navigateByUrl('login');    
   }
 
+  loadPages(){
+    // const permissaoFlag = localStorage.getItem('permissaoFlag');
+    // this.permissao = permissaoFlag != null ? JSON.parse(permissaoFlag) : false   
+    this.appPages = [
+      {
+        title: 'Publicações',
+        url: '/app/tabs/schedule',
+        icon: 'newspaper',
+        permit: true
+      },
+      {
+        title: 'Tags',
+        url: '/app/tabs/tags',
+        icon: 'bookmark',
+        permit: this.permissao
+      },
+      {
+        title: 'Sobre',
+        url: '/app/tabs/about',
+        icon: 'information-circle',
+        permit: true
+      }
   
-
-
-  async register() {
-    let token2 = this.storage.getLocalUser().token
-    let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
-
-
-    await Plugins.PushNotifications.register();
-    const {token} = await fcm.getToken();
-    const formData = new FormData();
-    formData.append('token', token);
-    this.http.post(`${API_CONFIG.baseUrl}/message/register`, formData, {'headers': authHeader})
-      .pipe(timeout(10000))
-      .subscribe(() => localStorage.setItem('allowPersonal', JSON.stringify(this.allowPersonal)),
-        _ => this.allowPersonal = !this.allowPersonal);
-  }
-
-  async unregister() {
-    let token2 = this.storage.getLocalUser().token
-    let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
-
-
-    await Plugins.PushNotifications.register();
-    const {token} = await fcm.getToken();
-    const formData = new FormData();
-    formData.append('token', token);
-    this.http.post(`${API_CONFIG.baseUrl}/message/unregister`, formData, {'headers': authHeader})
-      .pipe(timeout(10000))
-      .subscribe(() => localStorage.setItem('allowPersonal', JSON.stringify(this.allowPersonal)),
-        _ => this.allowPersonal = !this.allowPersonal);
-  }
-
-  onChange() {
-    localStorage.setItem('allowPush', JSON.stringify(this.allowPush));
-
-    if (this.allowPush) {
-      fcm.subscribeTo({ topic: this.TOPIC_NAME});
-    } else {
-      fcm.unsubscribeFrom({ topic: this.TOPIC_NAME});
-    }
-  }
-
-  onPmChange() {
-    localStorage.setItem('allowPersonal', JSON.stringify(this.allowPersonal));
-
-    if (this.allowPersonal) {
-      this.register();
-    } else {
-      this.unregister();
-    }
+    ]
   }
 
 
-  handleNotification(data) {
-    if (!data.text) {
+  // async register() {
+  //   let token2 = this.storage.getLocalUser().token
+  //   let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
+
+
+  //   await Plugins.PushNotifications.register();
+  //   const {token} = await fcm.getToken();
+  //   const formData = new FormData();
+  //   formData.append('token', token);
+  //   formData.append('cpf',this.storage.getLocalUser().cpf)
+  //   this.http.post(`${API_CONFIG.baseUrl}/message/register`, formData, {'headers': authHeader})
+  //     .pipe(timeout(10000))
+  //     .subscribe(() => this.allowPersonal = true);
+  // }
+
+  // async unregister() {
+  //   let token2 = this.storage.getLocalUser().token
+  //   let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
+
+
+  //   await Plugins.PushNotifications.register();
+  //   const {token} = await fcm.getToken();
+  //   const formData = new FormData();
+  //   formData.append('token', token);
+  //   formData.append('cpf',this.storage.getLocalUser().cpf)
+  //   this.http.post(`${API_CONFIG.baseUrl}/message/unregister`, formData, {'headers': authHeader})
+  //     .pipe(timeout(10000))
+  //     .subscribe(() => this.allowPersonal = false);
+  // }
+
+  // onChange() {
+  //   localStorage.setItem('allowPush', JSON.stringify(this.allowPush));
+
+  //   if (this.allowPush) {
+  //     fcm.subscribeTo({ topic: this.TOPIC_NAME});
+  //   } else {
+  //     fcm.unsubscribeFrom({ topic: this.TOPIC_NAME});
+  //   }
+  // }
+
+  // onPmChange() {
+  //   if (this.allowPersonal) {
+  //     this.register();
+  //   } else {
+  //     this.unregister();
+  //   }
+  // }
+
+
+  async handleNotification(data) {
+    if (!data.descricao) {
       return;
     }
 
-    this.items.splice(0, 0, {id: data.id, text: data.text});
-
-    // only keep the last 5 entries
-    if (this.items.length > 5) {
-      this.items.pop();
-    }
-
-    this.changeDetectorRef.detectChanges();
+    const alert = await this.toast.create({
+      header: data.titulo,
+      message: data.descricao,      
+      duration: 10000,
+      cssClass: "yourCssClassName",
+      buttons: [
+        {
+          side: 'end',
+          text: 'Visualizar',
+          handler: () => {
+            this.router.navigateByUrl(`/app/tabs/schedule/publicacao/${data.id}`)
+          }
+        }
+      ]
+      
+    });
+    // now present the alert on top of all other content
+    await alert.present();
   }
 
   private async initFCM() {
@@ -237,5 +244,28 @@ export class AppComponent implements OnInit {
         this.handleNotification(event.notification.extra);
       });
 
+  }
+
+  atualizarInformacoes(){
+    this.TagService.permissao().subscribe((data: any) => {
+      this.permissao = data             
+    })
+    if(this.isPushNotificationsAvailable){
+      this.atualizarToken();
+    }
+  }
+
+
+  async atualizarToken() {
+    let token2 = this.storage.getLocalUser().token
+    let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
+
+    const {token} = await fcm.getToken();
+    const formData = new FormData();
+    formData.append('token', token);
+    formData.append('cpf',this.storage.getLocalUser().cpf)
+    this.http.post(`${API_CONFIG.baseUrl}/message/atualizaToken`, formData, {'headers': authHeader})
+      .pipe(timeout(10000))
+      .subscribe();
   }
 }

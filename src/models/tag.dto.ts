@@ -1,6 +1,6 @@
 export interface TagDTO{
     id: string,
-    nome : string;
+    descricao : string;
     selecionado : boolean;
     cpfUsuario : string;
 }

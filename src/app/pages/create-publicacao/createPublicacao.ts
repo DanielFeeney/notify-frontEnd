@@ -1,4 +1,4 @@
-import { PopoverController, ToastController, ModalController, NavParams, Config } from '@ionic/angular';
+import { PopoverController, ToastController, ModalController, NavParams, Config, LoadingController } from '@ionic/angular';
 import { PopoverPage } from '../about-popover/about-popover';
 import { PublicacaoDTO } from '../../../models/publicacao.dto';
 import { TagDTO } from '../../../models/tag.dto';
@@ -9,7 +9,7 @@ import { StorageService } from '../../../services/application/storage.service';
 import { Router } from '@angular/router';
 import {storage, initializeApp} from 'firebase'
 import { firebaseConfig } from '../../../services/application/firebase.configutation';
-import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, SecurityContext } from '@angular/core';
 import { Plugins, CameraResultType, CameraSource, Capacitor } from '@capacitor/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Platform } from '@ionic/angular';
@@ -20,6 +20,7 @@ const { Camera } = Plugins;
   templateUrl: 'createPublicacao.html',
 })
 export class CreatePublicacao {
+  titulo = "Nova publicação"
   publicacao: PublicacaoDTO;
   cameraOn: boolean = false;
 
@@ -28,6 +29,9 @@ export class CreatePublicacao {
   @ViewChild('filePicker', { static: false }) filePickerRef: ElementRef<HTMLInputElement>;
   photo: SafeResourceUrl;
   isDesktop: boolean;
+
+  imagem: string;
+  loading: HTMLIonLoadingElement
 
   
 
@@ -40,7 +44,8 @@ export class CreatePublicacao {
     private PublicacaoService: PublicacaoService,
     private toastController: ToastController,
     private platform: Platform,
-    private sanitizer: DomSanitizer) { 
+    private sanitizer: DomSanitizer,
+    public loadingCtrl: LoadingController) { 
 
       initializeApp(firebaseConfig);
 
@@ -105,55 +110,56 @@ export class CreatePublicacao {
       toast.present();
       return;
     }
-    this.PublicacaoService.save(this.publicacao).subscribe();
-    this.cancelar();
+
+    this.loading = await this.loadingCtrl.create({
+      message: 'Salvando...'
+    });
+    await this.loading.present();
+
+    if(this.photo){
+      this.imagem = this.sanitizer.sanitize(SecurityContext.URL, this.photo);
+      const blob = await fetch(this.imagem).then(r => r.blob());
+      this.PublicacaoService.save(this.publicacao, blob).subscribe(
+        () => {
+          this.loading.dismiss();
+          this.cancelar();
+        }
+      );
+    }
+    else{
+      this.PublicacaoService.save(this.publicacao, null).subscribe(
+        () => {
+          this.loading.dismiss();
+          this.cancelar();
+        }
+      );
+    }    
   }
 
   cancelar(data?: any) {
     this.modalCtrl.dismiss(data);
   }
 
-  // getCameraPhoto(){
+  async takePhoto(){
+    const image = await Plugins.Camera.getPhoto({
+      quality: 100,
+      width: 400,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Camera
+    });
 
-  //   this.cameraOn = true;
+    this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+  }
 
-  //   Camera.getPicture(
-  //     { 
-  //       quality: 100,
-  //       destinationType: Camera.DestinationType.DATA_URL,
-  //       encodingType: Camera.EncodingType.JPEG,
-  //       mediaType: Camera.MediaType.PICTURE,
-  //     }).then((imageData) => {
-  //       this.onSuccess(imageData)
-  //     },
-  //     (err) => {
-  //       this.onFail(err.error)
-  //     })
-  // }
-
-  // onSuccess(imageData) {
-  //   var image = document.getElementById('myImage');
-  //   this.photo = "data:image/jpeg;base64," + imageData;
-  //   this.cameraOn = false;
-  // }
-
-  // onFail(message) {
-  //   alert('Camera falhou: ' + message);
-  //   this.cameraOn = false;
-  // }
-
-  async getPicture(type: string) {
-    if (!Capacitor.isPluginAvailable('Camera') || (this.isDesktop && type === 'gallery')) {
-      this.filePickerRef.nativeElement.click();
-      return;
-    }
+  async getPicture() {
 
     const image = await Camera.getPhoto({
       quality: 100,
       width: 400,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
-      source: CameraSource.Prompt
+      source: CameraSource.Photos
     });
 
     this.photo = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));

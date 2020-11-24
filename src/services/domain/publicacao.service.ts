@@ -13,8 +13,8 @@ export class PublicacaoService {
         
       let token = this.storage.getLocalUser().token
       let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
-        return this.http.get<PublicacaoDTO[]>(`${API_CONFIG.baseUrl}/publicacao/preferencias/${cpf}`,
-        {'headers': authHeader});
+        return this.http.get<PublicacaoDTO[]>(`${API_CONFIG.baseUrl}/publicacao/preferencias/${cpf}/${page}/${linesPerPage}`,
+        {'headers': authHeader,});
     }
 
     getFavoritos(cpf: String):  Observable<PublicacaoDTO[]> {
@@ -33,12 +33,36 @@ export class PublicacaoService {
         {'headers': authHeader});
     }
 
-    save(publicacao: PublicacaoDTO ): Observable<PublicacaoDTO>{
-        
+    save(publicacao: PublicacaoDTO, blob: Blob ){
       let token = this.storage.getLocalUser().token
       let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
-        return this.http.post<PublicacaoDTO>(`${API_CONFIG.baseUrl}/publicacao`, publicacao,
-        {'headers': authHeader});
+
+      const formData = new FormData();
+
+      if(blob)
+      formData.append('file', blob, `file.jpg`);
+
+      if(publicacao.id)
+      formData.append('id', publicacao.id);
+      formData.append('titulo', publicacao.titulo);
+      if(publicacao.subTitulo){
+        formData.append('subTitulo', publicacao.subTitulo);
+        console.log(publicacao.subTitulo)
+      }
+            
+      formData.append('descricao', publicacao.descricao);
+      formData.append('cpf', publicacao.cpfUsuario);
+      
+      publicacao.colTagDTO.forEach(tag => {
+        if(tag.selecionado){
+          formData.append('listaTag', tag.id );
+        }
+      });
+      
+
+      const request = new HttpRequest('POST', `${API_CONFIG.baseUrl}/publicacao`, formData,
+        {'headers': authHeader})
+        return this.http.request(request);
     }
 
     delete(idPublicacao: Number) {
@@ -51,6 +75,17 @@ export class PublicacaoService {
         const request = new HttpRequest('POST', `${API_CONFIG.baseUrl}/publicacao/delete`, formData,
         {'headers': authHeader})
         return this.http.request(request);
+    }
+
+
+    getImage(idPublicacao: Number) {
+        
+      let token = this.storage.getLocalUser().token
+      let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
+        
+      return this.http.get(`${API_CONFIG.baseUrl}/publicacao/imagem/${idPublicacao}`,
+      {'headers': authHeader,
+        responseType: 'arraybuffer'});
     }
 
     

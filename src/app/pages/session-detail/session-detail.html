@@ -29,8 +29,16 @@
     </ion-text>
   </div>
 
-  <ion-list>
-  </ion-list>
+  <div class="container row">
+    <div class="col-md-12">
+        <div *ngIf="imageurl">
+            <img [src]="imageurl">
+        </div>
+    </div>
+  </div>
+
+  <br/>
+
   <ion-list [lines]="ios ? 'inset' : 'full'">
     <ion-list-header>Tags</ion-list-header>
 

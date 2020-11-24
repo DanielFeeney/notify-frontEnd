@@ -23,20 +23,37 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'speakers',
-        children: [
-          {
-            path: 'session/:sessionId',
-            loadChildren: () => import('../session-detail/session-detail.module').then(m => m.SessionDetailModule)
-          },
-        ]
-      },
-      {
         path: 'about',
         children: [
           {
             path: '',
             loadChildren: () => import('../about/about.module').then(m => m.AboutModule)
+          }
+        ]
+      },
+      {
+        path: 'tags',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../tags/tags.module').then(m => m.TagsModule)
+          },
+          {
+            path: 'tag',
+            loadChildren: () => import('../create-tag/create-tag.module').then(m => m.CreateTagModule)
+          },
+          {
+            path: 'tag/:tagId',
+            loadChildren: () => import('../create-tag/create-tag.module').then(m => m.CreateTagModule)
+          }
+        ]
+      },
+      {
+        path: 'filtros',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../filtros/filtros.module').then(m => m.FiltrosModule)
           }
         ]
       },

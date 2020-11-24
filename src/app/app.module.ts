@@ -15,7 +15,6 @@ import { FormsModule } from '@angular/forms';
 import { TagService } from '../services/domain/tag.service';
 import { PublicacaoService } from '../services/domain/publicacao.service';
 import { FavoritosService } from '../services/domain/favoritos.service';
-import { Camera } from '@ionic-native/camera/ngx';
 import { UsuarioService } from '../services/domain/usuario.service';
 import { StorageService } from '../services/application/storage.service';
 import { AuthInterceptorProvider } from '../Interceptors/auth.interceptor';
@@ -23,6 +22,8 @@ import { ErrorInterceptorProvider } from '../Interceptors/error.interceptor';
 import { MessageService } from '../services/domain/message.service';
 import { HTTP } from '@ionic-native/http/ngx';
 import { PhotoService } from '../services/application/photo.service';
+import { FiltrosService } from '../services/domain/filtros.service';
+import { LoginService } from '../services/domain/login.service';
 
 @NgModule({
   imports: [
@@ -43,7 +44,7 @@ import { PhotoService } from '../services/application/photo.service';
   StorageService,
   FavoritosService, PhotoService,
   HTTP,
-  UsuarioService],
+  UsuarioService, FiltrosService, LoginService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

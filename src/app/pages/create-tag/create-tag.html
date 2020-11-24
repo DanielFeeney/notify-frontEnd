@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="default"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleDelete()">
+        <ion-icon slot="icon-only" name="trash"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked" color="primary">Tag</ion-label>
+        <ion-input [(ngModel)]="tag.descricao"  name="titulo" type="text" spellcheck="true" autocapitalize="on"
+          required>
+        </ion-input>
+      </ion-item>
+    </ion-list>
+  
+    <ion-row>
+      <ion-col>
+        <ion-button  type="submit" expand="block" (click)="save()">Salvar</ion-button>
+      </ion-col>
+    </ion-row>
+</ion-content>
