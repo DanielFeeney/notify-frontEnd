@@ -60,12 +60,17 @@ export class SessionDetailPage {
     });
 
     this.PublicacaoService.getImage(+this.idPublicacao).subscribe((res) =>{
-      let TYPED_ARRAY = new Uint8Array(res);
-      const STRING_CHAR = TYPED_ARRAY.reduce((data, byte)=> {
-        return data + String.fromCharCode(byte);
-        }, '');
-      let base64String = btoa(STRING_CHAR);
-      this.imageurl = this.sanitizer.bypassSecurityTrustUrl(`data:image/jpg;base64,${base64String}`);
+      if(res.byteLength > 0){
+        let TYPED_ARRAY = new Uint8Array(res);
+        const STRING_CHAR = TYPED_ARRAY.reduce((data, byte)=> {
+          return data + String.fromCharCode(byte);
+          }, '');
+        let base64String = btoa(STRING_CHAR);
+        this.imageurl = this.sanitizer.bypassSecurityTrustUrl(`data:image/jpg;base64,${base64String}`);
+      }
+      else{
+        this.imageurl = null;
+      }
     });
 
      this.FavoritosService.find(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>
@@ -73,7 +78,6 @@ export class SessionDetailPage {
      );
 
      this.UsuarioService.edicao(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>{
-       console.log(data)
        this.editar = data;
      });
 

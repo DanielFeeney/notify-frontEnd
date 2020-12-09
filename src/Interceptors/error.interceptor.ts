@@ -1,30 +1,37 @@
 import { Injectable } from "@angular/core";
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { AlertController } from '@ionic/angular';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor{
+
+    constructor(public alertCtrl: AlertController) {
+    }
    
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-       return next.handle(req)
-       .subscribe(
-           (data: any) =>{
-               if(data.error){
-                   let erro = data.error;
-                   if(erro.error){
-                       erro = erro.error;
-                   }
-                   if(!erro.status){
-                       erro = JSON.parse(erro);
-                   }
+        return next.handle(req)
+         .pipe(
+            catchError(error => {                   
+              this.showError(error)
+              return throwError(error);
+            })
+         );
+      }
 
-                   return Observable.throw(erro);
-               }
-           }
-       ) as any;
+    async showError(error){
+        let alert = await this.alertCtrl.create({
+            header: 'Erro ' + error.status + ': ' + error.error,
+            message: error.message,
+            buttons: [
+                {
+                    text: 'Ok'
+                }
+            ]
+        });
+        alert.present(); 
     }
-
-    
 
 }
 

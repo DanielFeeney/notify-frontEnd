@@ -12,23 +12,17 @@ export class FiltrosService {
     
 
     findAll(cpf : string): Observable<TagDTO[]> {
-        let token = this.storage.getLocalUser().token
-        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
-        return this.http.get<TagDTO[]>(`${API_CONFIG.baseUrl}/filtros/${cpf}`,
-        {'headers': authHeader});
+        return this.http.get<TagDTO[]>(`${API_CONFIG.baseUrl}/filtros/${cpf}`
+        );
     }
 
     save(tags: TagDTO[]) : Observable<TagDTO[]> {
-        let token = this.storage.getLocalUser().token
-        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
-        return this.http.post<TagDTO[]>(`${API_CONFIG.baseUrl}/filtros`, tags,
-        {'headers': authHeader});
+        return this.http.post<TagDTO[]>(`${API_CONFIG.baseUrl}/filtros`, tags
+        );
     }
 
     validarEnviarMsg(cpf : string): Observable<Boolean> {
-        let token = this.storage.getLocalUser().token
-        let authHeader = new HttpHeaders({"Authorization": "Bearer " + token})
-        return this.http.get<Boolean>(`${API_CONFIG.baseUrl}/filtros/validarEnviarMsg/${cpf}`,
-        {'headers': authHeader});
+        return this.http.get<Boolean>(`${API_CONFIG.baseUrl}/filtros/validarEnviarMsg/${cpf}`
+        );
     }
 }

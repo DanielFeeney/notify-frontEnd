@@ -56,7 +56,6 @@ export class LoginPage {
         this.LoginService.login(this.login).subscribe(
           response => {
             if(response)
-            console.log(response)
             this.LoginService.loginSucesso(response.headers.get('Authorization'));            
             this.app.checkLoginStatus();
             this.router.navigateByUrl('/app/tabs/schedule');
@@ -64,7 +63,6 @@ export class LoginPage {
           },
           (error) => {
             if(error instanceof HttpErrorResponse) {
-               console.log("Status: "+ error.status +", Message: " + error.message)
                this.mensagem = "Status: "+ error.status +", StatusText: " + error.statusText +", Name: " + error.name+", type: " + error.type+", Message: " + error.message;
             }
             this.loading.dismiss()
@@ -73,7 +71,6 @@ export class LoginPage {
         }, 5000);
   
        if(this.mensagem != null){
-         console.log(this.mensagem)
         const toast = await this.toastController.create({
           message: this.mensagem,
           duration: 2000

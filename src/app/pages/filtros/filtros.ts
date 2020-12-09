@@ -107,31 +107,23 @@ export class Filtros implements OnInit {
   }
 
   async register() {
-    let token2 = this.storage.getLocalUser().token
-    let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
-
-
     await Plugins.PushNotifications.register();
     const {token} = await fcm.getToken();
     const formData = new FormData();
     formData.append('token', token);
     formData.append('cpf',this.cpf)
-    this.http.post(`${API_CONFIG.baseUrl}/message/register`, formData, {'headers': authHeader})
+    this.http.post(`${API_CONFIG.baseUrl}/message/register`, formData)
       .pipe(timeout(10000))
       .subscribe(() => this.msg = true);
   }
 
   async unregister() {
-    let token2 = this.storage.getLocalUser().token
-    let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
-
-
     await Plugins.PushNotifications.register();
     const {token} = await fcm.getToken();
     const formData = new FormData();
     formData.append('token', token);
     formData.append('cpf',this.cpf)
-    this.http.post(`${API_CONFIG.baseUrl}/message/unregister`, formData, {'headers': authHeader})
+    this.http.post(`${API_CONFIG.baseUrl}/message/unregister`, formData)
       .pipe(timeout(10000))
       .subscribe(() => this.msg = false);
   }

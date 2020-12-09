@@ -44,7 +44,9 @@ import { LoginService } from '../services/domain/login.service';
   StorageService,
   FavoritosService, PhotoService,
   HTTP,
-  UsuarioService, FiltrosService, LoginService],
+  UsuarioService, FiltrosService, LoginService,
+  AuthInterceptorProvider, ErrorInterceptorProvider
+],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

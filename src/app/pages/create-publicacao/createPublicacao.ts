@@ -171,7 +171,7 @@ export class CreatePublicacao {
     const reader = new FileReader();
 
     if (!file.type.match(pattern)) {
-      console.log('File format not supported');
+      this.showError("Tipo de arquivo não suportado")
       return;
     }
 
@@ -181,5 +181,19 @@ export class CreatePublicacao {
     reader.readAsDataURL(file);
 
   }
+
+  async showError(msg: string){
+    let alert = await this.toastController.create({
+        header: "Erro",
+        message: msg,
+        duration: 2000,
+        buttons: [
+            {
+                text: 'Ok'
+            }
+        ]
+    });
+    alert.present(); 
+}
 
 }

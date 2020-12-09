@@ -8,9 +8,7 @@ export class AuthInterceptor implements HttpInterceptor{
     constructor(public storage: StorageService){}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        console.log(req)
        let localUser = this.storage.getLocalUser();
-       console.log(localUser.token)
 
        if(localUser){
            const authReq = req.clone({
@@ -18,7 +16,6 @@ export class AuthInterceptor implements HttpInterceptor{
                    'Authorization', 
                    'Bearer ' + localUser.token)
            });
-           console.log(next.handle(authReq))
            return next.handle(authReq)
        }
         else{

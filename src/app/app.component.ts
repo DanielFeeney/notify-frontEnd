@@ -68,8 +68,8 @@ export class AppComponent implements OnInit {
     
   }
 
-  async ngOnInit() {
-    this.checkLoginStatus();    
+  async ngOnInit() { 
+    this.checkLoginStatus()
   }
 
   initializeApp() {
@@ -86,8 +86,8 @@ export class AppComponent implements OnInit {
     let verifica = this.storage.getLocalUser()
     
     if(verifica && verifica.token){
-      this.atualizarInformacoes();
-      return this.updateLoggedInStatus(true);
+      this.updateLoggedInStatus(true);
+      return;
     }
     else{
      return this.updateLoggedInStatus(false);
@@ -97,8 +97,13 @@ export class AppComponent implements OnInit {
   updateLoggedInStatus(loggedIn: boolean) {
     setTimeout(() => {
       this.loggedIn = loggedIn;
+      if(this.loggedIn){
+      this.atualizarInformacoes();      
       this.loadPages();
-      console.log(this.permissao)
+      }
+      else{
+        this.logout();
+      }
     }, 300);
   }
 
@@ -257,14 +262,11 @@ export class AppComponent implements OnInit {
 
 
   async atualizarToken() {
-    let token2 = this.storage.getLocalUser().token
-    let authHeader = new HttpHeaders({"Authorization": "Bearer " + token2})
-
     const {token} = await fcm.getToken();
     const formData = new FormData();
     formData.append('token', token);
     formData.append('cpf',this.storage.getLocalUser().cpf)
-    this.http.post(`${API_CONFIG.baseUrl}/message/atualizaToken`, formData, {'headers': authHeader})
+    this.http.post(`${API_CONFIG.baseUrl}/message/atualizaToken`, formData)
       .pipe(timeout(10000))
       .subscribe();
   }

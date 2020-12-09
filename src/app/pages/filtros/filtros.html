@@ -24,10 +24,12 @@
   </ion-header>
 
   
+  
 
   <ion-list #scheduleList>
    <ion-list-header>
-    <h3>Filtros</h3>
+    <h3>Deseja receber notificações relacionadas as tags selecionadas?</h3>
+    <ion-toggle (ionChange)="onPmChange()" disabled="{{veririficaMsg}}" [(ngModel)]="msg"></ion-toggle>
     </ion-list-header>
     <ion-item-group *ngFor="let filtro of filtros">
       <ion-item>
@@ -37,15 +39,11 @@
         <ion-checkbox [(ngModel)]="filtro.selecionado"></ion-checkbox>
       </ion-item>
     </ion-item-group>
-    <ion-item>
-      <ion-button  type="submit" expand="block" (click)="save()">Salvar</ion-button>
-    </ion-item>
+    
   </ion-list>
 
-  
+  <ion-button  type="submit" expand="block" (click)="save()">Salvar</ion-button>
 
-  <h3>Deseja receber notificações relacionadas as tags selecionadas?</h3>
-  <ion-toggle (ionChange)="onPmChange()" disabled="{{veririficaMsg}}" [(ngModel)]="msg"></ion-toggle>
  
 
   

@@ -130,7 +130,6 @@ export class SchedulePage implements OnInit {
   async addFavorite(slidingItem: HTMLIonItemSlidingElement, idPublicacao: Number) {
     
     const verifica = <Boolean> await this.FavoritosService.find(idPublicacao, this.cpf).toPromise().then()
-    console.log(verifica)
     if (verifica === true) {
       // Prompt to remove favorite
       this.deleteFav(slidingItem, idPublicacao, 'Essa publicação já esta nos favoritos');
@@ -193,7 +192,6 @@ export class SchedulePage implements OnInit {
 
   search(){
     let p = []
-    console.log(this.publicationsAux)
     this.publications = this.publicationsAux;
     this.publications.forEach(
       (x : PublicacaoDTO) =>{
