@@ -9,6 +9,7 @@ import { StorageService } from '../../../services/application/storage.service';
 import { CreatePublicacao } from '../create-publicacao/createPublicacao';
 import { PublicacaoDTO } from '../../../models/publicacao.dto';
 import { UsuarioService } from '../../../services/domain/usuario.service';
+import { TagDTO } from '../../../models/tag.dto';
 
 @Component({
   selector: 'page-schedule',
@@ -32,6 +33,7 @@ export class SchedulePage implements OnInit {
   cpf : string;
   pages : number = 0;
   publicar : Boolean = false;
+  tags: TagDTO[] = []
 
   constructor(
     public alertCtrl: AlertController,
@@ -65,10 +67,12 @@ export class SchedulePage implements OnInit {
     this.ios = this.config.get('mode') === 'ios';
   }
 
-  updateSchedule() {    
+  updateSchedule() {   
+
+    this.atualizarFiltros()
 
     if(this.segment === 'all'){
-      this.PublicacaoService.findAll(this.cpf, this.pages, 10).subscribe((data: any) => {
+      this.PublicacaoService.findAll(this.cpf, this.pages, 10, this.tags).subscribe((data: any) => {
         this.publications = data ;
         this.publicationsAux = data;
       })
@@ -80,6 +84,11 @@ export class SchedulePage implements OnInit {
         this.pages = 0;
       })
     } 
+  }
+
+  atualizarFiltros(){
+    const filtros = localStorage.getItem('filtros');
+    this.tags = filtros != null ? JSON.parse(filtros) : [];
   }
 
   
@@ -171,7 +180,8 @@ export class SchedulePage implements OnInit {
 
   doInfinite(infiniteScrool){
     this.pages ++;
-    this.PublicacaoService.findAll(this.cpf, this.pages, 10).subscribe((data: any) => {
+    this.atualizarFiltros()
+    this.PublicacaoService.findAll(this.cpf, this.pages, 10, this.tags).subscribe((data: any) => {
       this.publications = this.publications.concat(data) ;
       this.publicationsAux = this.publications;
     })

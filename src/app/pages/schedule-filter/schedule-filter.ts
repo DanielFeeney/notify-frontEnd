@@ -42,10 +42,8 @@ export class ScheduleFilterPage {
       this.cpf = verifica.cpf;
     }
 
-    this.FiltrosService.findAll(this.cpf).subscribe((filtros: any[]) => {
-      this.filtros = filtros;
-      this.filtros.forEach(e => e.cpfUsuario = this.cpf)
-    });
+    const filtros = localStorage.getItem('filtros');
+    this.filtros = filtros != null ? JSON.parse(filtros) : [];
   }
 
   selecionarTodos(check: boolean){
@@ -61,10 +59,9 @@ export class ScheduleFilterPage {
     await this.loading.present();
 
     setTimeout(() => {
-      this.FiltrosService.save(this.filtros).subscribe(() => {
+      localStorage.setItem('filtros', JSON.stringify(this.filtros));
         this.loading.dismiss();
         this.cancelar();
-      });      
     }, 5000)
     
   }

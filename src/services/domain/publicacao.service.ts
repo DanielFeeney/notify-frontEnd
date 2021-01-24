@@ -4,13 +4,21 @@ import { API_CONFIG } from '../../configuration/api.config';
 import { Observable } from 'rxjs';
 import { PublicacaoDTO } from '../../models/publicacao.dto';
 import { StorageService } from '../application/storage.service';
+import { TagDTO } from '../../models/tag.dto';
 
 @Injectable()
 export class PublicacaoService {
     constructor(public http: HttpClient,  public storage: StorageService){}
 
-    findAll(cpf : string, page: number = 0, linesPerPage : number = 24): Observable<PublicacaoDTO[]> {
-        return this.http.get<PublicacaoDTO[]>(`${API_CONFIG.baseUrl}/publicacao/preferencias/${cpf}/${page}/${linesPerPage}`,
+    findAll(cpf : string, page: number, linesPerPage : number, filtros : TagDTO[] ): Observable<PublicacaoDTO[]> {
+        const filtrosId = []
+        filtros.forEach(x => {
+          if(x.selecionado){
+            filtrosId.push(x.id)
+          }
+        })
+        const params = new HttpParams().set('filtros', filtrosId.toString()).set('cpf', cpf).set('page', page.toString()).set('linesPerPage', linesPerPage.toString());
+        return this.http.get<PublicacaoDTO[]>(`${API_CONFIG.baseUrl}/publicacao/preferencias/`, {params: params},
         );
     }
 

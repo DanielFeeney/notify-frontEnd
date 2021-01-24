@@ -4,12 +4,7 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title *ngIf="!ios && !showSearchbar">Notificações</ion-title>
-    <ion-searchbar *ngIf="showSearchbar" showCancelButton="always" [(ngModel)]="queryText" (ionChange)="search()" (ionCancel)="showSearchbar = false" placeholder="Search"></ion-searchbar>
-    <ion-buttons slot="end">
-      <ion-button *ngIf="!ios && !showSearchbar" (click)="showSearchbar = true">
-        <ion-icon slot="icon-only" name="search"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    
   </ion-toolbar>  
 </ion-header>
 
@@ -18,18 +13,15 @@
     <ion-toolbar>
       <ion-title size="large">Notificações</ion-title>
     </ion-toolbar>
-    <ion-toolbar>
-      <ion-searchbar [(ngModel)]="queryText" (ionChange)="search()" placeholder="Search"></ion-searchbar>
-    </ion-toolbar>
   </ion-header>
 
   
-  
+  <h3>Deseja receber notificações relacionadas as tags selecionadas?</h3>
+    <ion-toggle (ionChange)="onPmChange()" disabled="{{veririficaMsg}}" [(ngModel)]="msg"></ion-toggle>
 
   <ion-list #scheduleList>
    <ion-list-header>
-    <h3>Deseja receber notificações relacionadas as tags selecionadas?</h3>
-    <ion-toggle (ionChange)="onPmChange()" disabled="{{veririficaMsg}}" [(ngModel)]="msg"></ion-toggle>
+    <h3>Selecione as tags que deseja receber as notificações</h3>
     </ion-list-header>
     <ion-item-group *ngFor="let filtro of filtros">
       <ion-item>

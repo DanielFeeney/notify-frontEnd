@@ -13,6 +13,7 @@ import { API_CONFIG } from '../configuration/api.config';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { LoginService } from '../services/domain/login.service';
 import { TagService } from '../services/domain/tag.service';
+import { FiltrosService } from '../services/domain/filtros.service';
 const { PushNotifications } = Plugins;
 
 const fcm = new FCM();
@@ -47,10 +48,10 @@ export class AppComponent implements OnInit {
     private storage: StorageService,
     private swUpdate: SwUpdate,
     private toastCtrl: ToastController,
-    public loginService: LoginService,    
-    public TagService: TagService,
+    public loginService: LoginService, 
     private readonly changeDetectorRef: ChangeDetectorRef,
     private http: HttpClient,
+    public TagService: TagService,
     private toast: ToastController
   ) {
     this.initializeApp();
@@ -99,7 +100,6 @@ export class AppComponent implements OnInit {
       this.loggedIn = loggedIn;
       if(this.loggedIn){
       this.atualizarInformacoes();      
-      this.loadPages();
       }
       else{
         this.logout();
@@ -253,11 +253,13 @@ export class AppComponent implements OnInit {
 
   atualizarInformacoes(){
     this.TagService.permissao().subscribe((data: any) => {
-      this.permissao = data             
+      this.permissao = data
+      this.loadPages();           
     })
     if(this.isPushNotificationsAvailable){
       this.atualizarToken();
     }
+    this.atualizarFiltros();
   }
 
 
@@ -269,5 +271,11 @@ export class AppComponent implements OnInit {
     this.http.post(`${API_CONFIG.baseUrl}/message/atualizaToken`, formData)
       .pipe(timeout(10000))
       .subscribe();
+  }
+
+  atualizarFiltros(){
+    this.TagService.allTags().subscribe((filtros: any[]) => {
+      localStorage.setItem('filtros', JSON.stringify(filtros));
+    });
   }
 }

@@ -105,14 +105,14 @@ export class LoginPage {
   // }
 
   ionViewDidEnter(){
-    // console.log("Aqui")
-    // this.LoginService.refreshToken().subscribe(
-    //   response => {
-    //     console.log(response)
-    //     this.LoginService.loginSucesso(response.headers.get('Authorization'));
-    //     this.router.navigateByUrl('/app/tabs/schedule');
-    //   }
-    // )
+    console.log("Aqui")
+    this.LoginService.refreshToken().subscribe(
+      response => {
+        console.log(response)
+        this.LoginService.loginSucesso(response.headers.get('Authorization'));
+        this.router.navigateByUrl('/app/tabs/schedule');
+      }
+    )
   }
 
   format() {
