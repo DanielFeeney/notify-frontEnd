@@ -1,11 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="default"></ion-back-button>
+      <ion-back-button [defaultHref]="voltar"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button (click)="toggleDelete()">
-        <ion-icon slot="icon-only" name="trash"></ion-icon>
+        <ion-icon *ngIf="tagId" slot="icon-only" name="trash"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

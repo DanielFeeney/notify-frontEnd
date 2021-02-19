@@ -7,8 +7,6 @@ import { PhotoService } from '../../../services/application/photo.service';
 import { PublicacaoService } from '../../../services/domain/publicacao.service';
 import { StorageService } from '../../../services/application/storage.service';
 import { Router } from '@angular/router';
-import {storage, initializeApp} from 'firebase'
-import { firebaseConfig } from '../../../services/application/firebase.configutation';
 import { Component, ElementRef, ViewChild, OnInit, SecurityContext } from '@angular/core';
 import { Plugins, CameraResultType, CameraSource, Capacitor } from '@capacitor/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -47,8 +45,8 @@ export class CreatePublicacao {
     private sanitizer: DomSanitizer,
     public loadingCtrl: LoadingController) { 
 
-      initializeApp(firebaseConfig);
-
+      
+      
     }
 
   ionViewWillEnter() {

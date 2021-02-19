@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button  [defaultHref]="login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cadastrar</ion-title>    
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <form [formGroup]="formGroup" (ngSubmit)="signUpUser(); $event.preventDefault()">
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked" color="primary">Nome Completo</ion-label>
+          <ion-input formControlName="nome" type="text"></ion-input>
+          <ion-text color="danger">
+            <p *ngIf="formGroup.controls['nome'].dirty && 
+            formGroup.controls['nome'].errors">Nome inválido</p>
+          </ion-text>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked" color="primary">E-mail</ion-label>
+          <ion-input formControlName="email" type="text"></ion-input>
+          <ion-text color="danger">
+            <p *ngIf="formGroup.controls['email'].dirty && 
+            formGroup.controls['email'].errors">E-mail inválido</p>
+          </ion-text>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked" color="primary">CPF</ion-label>
+          <ion-input formControlName="cpf" type="text" (ionChange)="format($event)"></ion-input>
+          <ion-text color="danger">
+            <p *ngIf="formGroup.controls['cpf'].dirty && 
+            formGroup.controls['cpf'].errors">CPF inválido</p>
+          </ion-text>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="stacked" color="primary">Data de Nascimento</ion-label>
+          <ion-input formControlName="dataNascimento" type="date"></ion-input>
+          <ion-text color="danger">
+            <p *ngIf="formGroup.controls['dataNascimento'].dirty && 
+            formGroup.controls['dataNascimento'].errors">Data inválida</p>
+          </ion-text>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked" color="primary">Perfil</ion-label>
+          <ion-select [compareWith]="compareWith" formControlName="perfilId">
+            <ion-select-option *ngFor="let perfil of perfis" [value]="perfil.id">{{perfil.descricao}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="stacked" color="primary">Senha</ion-label>
+          <ion-input formControlName="senha" type="password"></ion-input>
+          <ion-text color="danger">
+            <p *ngIf="formGroup.controls['senha'].dirty && 
+            formGroup.controls['senha'].errors">Senha inválida</p>
+          </ion-text>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label position="stacked" color="primary">Confirmar Senha</ion-label>
+          <ion-input formControlName="confirmarSenha" type="password"></ion-input>
+          <ion-text color="danger">
+            <p *ngIf="formGroup.controls['confirmarSenha'].dirty && 
+            formGroup.controls['confirmarSenha'].errors">Confirmar senha precisa ser igual a senha</p>
+          </ion-text>
+        </ion-item>
+        
+      </ion-list>
+  
+      <ion-row>
+        <ion-col>
+          <ion-button  type="submit" expand="block" [disabled]="formGroup.invalid">Salvar</ion-button>
+        </ion-col>
+      </ion-row>
+    </form>
+
+  
+</ion-content>

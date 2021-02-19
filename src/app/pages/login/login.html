@@ -47,13 +47,11 @@
 
       <ion-text color="danger">
         <p [hidden]="senha.valid || submitted == false" class="ion-padding-start">
-          Senha é obrigatória
+          Senha obrigatória
         </p>
       </ion-text>
 
-      <ion-text>
-        {{mensagem}}
-      </ion-text>
+      
     </ion-list>
 
     
@@ -62,7 +60,13 @@
       <ion-col>
         <ion-button (click)="onLogin(loginForm)" type="submit" expand="block">Entrar</ion-button>
       </ion-col>
+      <ion-col>
+        <ion-button (click)="signUp()" expand="block" outline>Cadastrar</ion-button>
+      </ion-col>
     </ion-row>
+    <br/>
+    <p><a (click)="resetPassword()">Esqueci minha senha</a></p>
+
   </form>
 
 </ion-content>

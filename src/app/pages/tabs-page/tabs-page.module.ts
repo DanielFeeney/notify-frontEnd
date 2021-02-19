@@ -11,6 +11,8 @@ import { SessionDetailModule } from '../session-detail/session-detail.module';
 import { TagsModule } from '../tags/tags.module';
 import { CreateTagModule } from '../create-tag/create-tag.module';
 import { FiltrosModule } from '../filtros/filtros.module';
+import { UsuariosModule } from '../usuarios/usuarios.module';
+import { UsuarioDetailModule } from '../usuarios-detail/usuario-detail.module';
 
 @NgModule({
   imports: [
@@ -23,7 +25,8 @@ import { FiltrosModule } from '../filtros/filtros.module';
     TagsModule,
     CreateTagModule,
     FiltrosModule,
-
+    UsuariosModule,
+    UsuarioDetailModule
   ],
   declarations: [
     TabsPage,

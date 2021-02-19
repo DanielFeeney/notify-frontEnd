@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TabsPage } from './tabs-page';
 import { SchedulePage } from '../schedule/schedule';
+import { UsuariosPage } from '../usuarios/usuarios';
 
 
 const routes: Routes = [
@@ -19,6 +20,23 @@ const routes: Routes = [
           {
             path: 'publicacao/:publicacaoId',
             loadChildren: () => import('../session-detail/session-detail.module').then(m => m.SessionDetailModule)
+          }
+        ]
+      },
+      {
+        path: 'user',
+        children: [
+          {
+            path: '',
+            component: UsuariosPage,
+          },
+          {
+            path: 'usuario',
+            loadChildren: () => import('../usuarios-detail/usuario-detail.module').then(m => m.UsuarioDetailModule)
+          },
+          {
+            path: 'usuario/:usuarioId',
+            loadChildren: () => import('../usuarios-detail/usuario-detail.module').then(m => m.UsuarioDetailModule)
           }
         ]
       },
@@ -68,6 +86,19 @@ const routes: Routes = [
           {
             path: '',
             loadChildren: () => import('../create-publicacao/createPublicacao.module').then(m => m.CreatePublicacaoModule)
+          }
+        ]
+      },
+      {
+        path: 'profile',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../profile/profile.module').then(m => m.ProfileModule)
+          },
+          {
+            path: 'password',
+            loadChildren: () => import('../password/password.module').then(m => m.PasswordModule)
           }
         ]
       }

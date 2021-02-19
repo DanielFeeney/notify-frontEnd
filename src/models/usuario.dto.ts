@@ -1,5 +1,9 @@
 export interface UsuarioDTO{
+    id: string;
     cpf : string;
+    nome : string;
+    email: string;
     dataNascimento : Date;
-    senha : string;
+    perfilId: string;
+    perfil: string;
 }

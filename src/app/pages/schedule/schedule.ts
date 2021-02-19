@@ -8,7 +8,7 @@ import { FavoritosService } from '../../../services/domain/favoritos.service';
 import { StorageService } from '../../../services/application/storage.service';
 import { CreatePublicacao } from '../create-publicacao/createPublicacao';
 import { PublicacaoDTO } from '../../../models/publicacao.dto';
-import { UsuarioService } from '../../../services/domain/usuario.service';
+import { PermissaoService } from '../../../services/domain/permissao.service';
 import { TagDTO } from '../../../models/tag.dto';
 
 @Component({
@@ -44,7 +44,7 @@ export class SchedulePage implements OnInit {
     public toastCtrl: ToastController,
     public config: Config,
     private storage: StorageService,
-    public UsuarioService: UsuarioService,
+    public PermissaoService: PermissaoService,
     public PublicacaoService: PublicacaoService,
     public FavoritosService: FavoritosService
   ) { }
@@ -57,14 +57,21 @@ export class SchedulePage implements OnInit {
     }
     else{
       this.cpf = verifica.cpf;
-    }
+    }    
+  }
 
-    this.UsuarioService.criacao(this.cpf).subscribe(x =>
-      this.publicar = x)
+  ionViewWillEnter(){
     
     this.updateSchedule();
 
+    this.permissaoCriaPublicacao();
+
     this.ios = this.config.get('mode') === 'ios';
+  }
+
+  permissaoCriaPublicacao(){
+    this.PermissaoService.criacao(this.cpf).subscribe(x =>
+      this.publicar = x)
   }
 
   updateSchedule() {   
@@ -175,6 +182,8 @@ export class SchedulePage implements OnInit {
 
     const { data } = await modal.onWillDismiss();
     
+    this.pages = 0;
+    this.publications = []
     this.updateSchedule();
   }
 

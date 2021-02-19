@@ -4,8 +4,8 @@ import { TagDTO } from '../../../models/tag.dto';
 import { PublicacaoDTO } from '../../../models/publicacao.dto';
 import { FavoritosService } from '../../../services/domain/favoritos.service';
 import { StorageService } from '../../../services/application/storage.service';
-import { AlertController, ModalController, IonRouterOutlet } from '@ionic/angular';
-import { UsuarioService } from '../../../services/domain/usuario.service';
+import { AlertController, ModalController, IonRouterOutlet, LoadingController } from '@ionic/angular';
+import { PermissaoService } from '../../../services/domain/permissao.service';
 import { PublicacaoService } from '../../../services/domain/publicacao.service';
 import { CreatePublicacao } from '../create-publicacao/createPublicacao';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -22,7 +22,7 @@ export class SessionDetailPage {
   excluir = false;
 
 
-  default = '';
+  voltar = '';
   idPublicacao = ''
   cpf : string;
 
@@ -31,13 +31,16 @@ export class SessionDetailPage {
 
   imageurl: SafeResourceUrl;
 
+  loading: HTMLIonLoadingElement
+
   constructor(
     public alertCtrl: AlertController,
     private route: ActivatedRoute,
     public modalCtrl: ModalController,
-    private UsuarioService: UsuarioService,
+    private PermissaoService: PermissaoService,
     private storage: StorageService,
-    public router: Router,
+    public router: Router,    
+    public loadingCtrl: LoadingController,
     public routerOutlet: IonRouterOutlet,
     public PublicacaoService: PublicacaoService,
     private FavoritosService: FavoritosService,
@@ -74,20 +77,20 @@ export class SessionDetailPage {
     });
 
      this.FavoritosService.find(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>
-     this.isFavorite = data
+        this.isFavorite = data
      );
 
-     this.UsuarioService.edicao(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>{
+     this.PermissaoService.edicao(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>{
        this.editar = data;
      });
 
-     this.UsuarioService.delecao(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>{
+     this.PermissaoService.delecao(+this.idPublicacao, this.cpf).subscribe((data: boolean) =>{
        this.excluir = data;
     });
   }
 
   ionViewDidEnter() {
-    this.default = `/app/tabs/schedule`;
+    this.voltar = `/app/tabs/schedule`;
   }
 
   toggleFavorite() {
@@ -113,10 +116,20 @@ export class SessionDetailPage {
           },
           {
             text: 'Deletar',
-            handler: () => {
-              // they want to remove this session from their favorites
-              this.PublicacaoService.delete(+this.idPublicacao).subscribe()
-              this.router.navigateByUrl('/app/tabs/schedule')
+            handler: async () => {
+              let navTransition = alert.dismiss();
+              this.loading = await this.loadingCtrl.create({
+              message: 'Excluindo...'
+              });
+              this.loading.present();
+              this.PublicacaoService.delete(+this.idPublicacao).subscribe(res =>{
+                setTimeout(()=>{
+                  this.loading.dismiss();
+                  navTransition.then(() => {                    
+                  this.router.navigateByUrl('/app/tabs/schedule')
+                  });
+                }, 5000);  
+              })
             }
           }
         ]
@@ -139,9 +152,34 @@ export class SessionDetailPage {
     await modal.present();
 
     const { data } = await modal.onWillDismiss();
-    // if (!data) {
-    //   this.excludeTracks = data;      
-    // }
-    window.location.reload();
+
+    
+
+    let loading: HTMLIonLoadingElement
+    
+    loading = await this.loadingCtrl.create({
+      message: "Carregando..."
+    });
+    await loading.present();
+
+    this.PublicacaoService.getImage(+this.idPublicacao).subscribe((res) =>{
+      if(res.byteLength > 0){
+        let TYPED_ARRAY = new Uint8Array(res);
+        const STRING_CHAR = TYPED_ARRAY.reduce((data, byte)=> {
+          return data + String.fromCharCode(byte);
+          }, '');
+        let base64String = btoa(STRING_CHAR);
+        this.imageurl = this.sanitizer.bypassSecurityTrustUrl(`data:image/jpg;base64,${base64String}`);
+      }
+      else{
+        this.imageurl = null;
+      }
+    });
+
+    this.PublicacaoService.find(+this.idPublicacao).subscribe((data: PublicacaoDTO) =>{
+      this.publicacao = data;
+      this.filtros = data.colTagDTO;
+      loading.dismiss()
+    });
   }
 }

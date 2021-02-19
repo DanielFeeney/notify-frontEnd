@@ -1,13 +1,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonList, IonRouterOutlet, LoadingController, ModalController, ToastController, Config } from '@ionic/angular';
-
-import { ScheduleFilterPage } from '../schedule-filter/schedule-filter';
-import { PublicacaoService } from '../../../services/domain/publicacao.service';
-import { FavoritosService } from '../../../services/domain/favoritos.service';
 import { StorageService } from '../../../services/application/storage.service';
-import { PublicacaoDTO } from '../../../models/publicacao.dto';
-import { UsuarioService } from '../../../services/domain/usuario.service';
 import { FiltrosService } from '../../../services/domain/filtros.service';
 import { TagDTO } from '../../../models/tag.dto';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -45,20 +39,11 @@ export class Filtros implements OnInit {
     public routerOutlet: IonRouterOutlet,
     public toastCtrl: ToastController,
     public config: Config,
-    private storage: StorageService,
     public FiltrosService: FiltrosService,
     private http: HttpClient,
   ) { }
 
   ngOnInit() {
-    let verifica = this.storage.getLocalUser();
-
-    if(!verifica.token){
-      this.router.navigateByUrl('')
-    }
-    else{
-      this.cpf = verifica.cpf;
-    }
 
   }
   ionViewWillEnter(){
@@ -73,7 +58,8 @@ export class Filtros implements OnInit {
   
 
   buscarFiltros() {    
-      this.FiltrosService.findAll(this.cpf).subscribe((data: any) => {
+      this.FiltrosService.findAll().subscribe((data: any) => {
+        console.log(data)
         this.filtros = data;
         this.filtrosAux = data;
       })
@@ -81,7 +67,7 @@ export class Filtros implements OnInit {
   }
 
   validarEnviarMsg() {    
-    this.FiltrosService.validarEnviarMsg(this.cpf).subscribe((data: any) => {
+    this.FiltrosService.validarEnviarMsg().subscribe((data: any) => {
       this.msg = data;
     })
   
@@ -102,7 +88,7 @@ export class Filtros implements OnInit {
 
   salvar() {
     this.FiltrosService.save(this.filtros).subscribe((filtros: any[]) => {
-      this.filtros = filtros;
+      this.buscarFiltros()
     });
   }
 

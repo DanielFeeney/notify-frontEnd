@@ -24,13 +24,6 @@ export class TagService {
         );
     }
 
-    permissao(): Observable<TagDTO> {
-        let token = this.storage.getLocalUser().token
-        let cpf = this.storage.getLocalUser().cpf
-        return this.http.get<TagDTO>(`${API_CONFIG.baseUrl}/tag/permissao/${cpf}`,
-        );
-    }
-
     delete(tagId: Number) {
           const formData = new FormData();
           formData.append('tagId', tagId.toString());

@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserOptions } from '../../interfaces/user-options';
-import { UsuarioDTO } from '../../../models/usuario.dto';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoginService } from '../../../services/domain/login.service';
 import { TagService } from '../../../services/domain/tag.service';
 import { AppComponent } from '../../app.component';
+import { LoginDTO } from '../../../models/login.dto';
 
 
 
@@ -17,7 +17,7 @@ import { AppComponent } from '../../app.component';
   styleUrls: ['./login.scss'],
 })
 export class LoginPage {
-  login: UsuarioDTO = {cpf: '', dataNascimento: null, senha: ''}
+  login: LoginDTO = {cpf: '', dataNascimento: null, senha: ''}
   submitted = false;
   mensagem : string;
 
@@ -36,17 +36,15 @@ export class LoginPage {
     public LoginService: LoginService,
     public toastController: ToastController,
     public loadingCtrl: LoadingController,
-    public app: AppComponent
+    public app: AppComponent,
+    public alertCtrl: AlertController
   ) { }
 
   async onLogin(form: NgForm) {
     this.mensagem = null;
     this.submitted = true;
 
-    this.loading = await this.loadingCtrl.create({
-      message: 'Entrando...'
-    });
-    await this.loading.present();
+    this.load('Carregando...');
 
     if (form.valid) {
       this.login.cpf = this.eraseFormat(this.login.cpf)
@@ -63,7 +61,7 @@ export class LoginPage {
           },
           (error) => {
             if(error instanceof HttpErrorResponse) {
-               this.mensagem = "Status: "+ error.status +", StatusText: " + error.statusText +", Name: " + error.name+", type: " + error.type+", Message: " + error.message;
+               this.ErroLogin()
             }
             this.loading.dismiss()
           }
@@ -80,39 +78,20 @@ export class LoginPage {
       }
     }
 
-  // async onSignup() {
-  //   let mensagem = null;
-  //    this.LoginService.login(this.login).subscribe(
-  //     response => {
-  //       this.LoginService.loginSucesso(response.headers.get('Authorization'));
-  //       this.router.navigateByUrl('/app/tabs/schedule');
-  //     },
-  //     error =>
-  //     {
-  //       mensagem = error.error;
-  //     }
-  //    )
-
-  //    if(mensagem != null){
-  //     const toast = await this.toastController.create({
-  //       message: mensagem,
-  //       duration: 2000
-  //     });
-  //    }
-      
-    
-  //    this.router.navigateByUrl('/signup');
-  // }
-
-  ionViewDidEnter(){
-    console.log("Aqui")
+  ionViewDidEnter(){    
     this.LoginService.refreshToken().subscribe(
       response => {
-        console.log(response)
         this.LoginService.loginSucesso(response.headers.get('Authorization'));
         this.router.navigateByUrl('/app/tabs/schedule');
       }
     )
+  }
+
+  async load(texto : string){
+    this.loading = await this.loadingCtrl.create({
+      message: texto
+    });
+    await this.loading.present();
   }
 
   format() {
@@ -154,6 +133,27 @@ eraseFormat(v: string){
   v = v.replace('.', ''); 
   v = v.replace('-', '');
   return v;
+}
+
+signUp(){
+  this.router.navigateByUrl('login/registrar');
+}
+
+resetPassword(){
+  this.router.navigateByUrl('login/reset-password');
+}
+
+async ErroLogin(){
+  let alert = await this.alertCtrl.create({
+      header: 'Não é possivel entrar',
+      message: "Efetue o cadastro ou tente novamente",
+      buttons: [
+          {
+              text: 'Ok'
+          }
+      ]
+  });
+  alert.present(); 
 }
 
 }

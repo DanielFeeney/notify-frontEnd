@@ -2,29 +2,28 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, IonList, IonRouterOutlet, LoadingController, ModalController, ToastController, Config } from '@ionic/angular';
 import { StorageService } from '../../../services/application/storage.service';
-import { TagDTO } from '../../../models/tag.dto';
-import { CreateTagPage } from '../create-tag/create-tag';
-import { TagService } from '../../../services/domain/tag.service';
+import { CreatePublicacao } from '../create-publicacao/createPublicacao';
+import { PublicacaoDTO } from '../../../models/publicacao.dto';
+import { PermissaoService } from '../../../services/domain/permissao.service';
+import { UsuarioDTO } from '../../../models/usuario.dto';
+import { UsuarioService } from '../../../services/domain/usuario.service';
 
 @Component({
-  selector: 'tags',
-  templateUrl: 'tags.html'
+  selector: 'page-usuarios',
+  templateUrl: 'usuarios.html',
+  styleUrls: ['./usuarios.scss'],
 })
-export class Tags implements OnInit {
-
+export class UsuariosPage implements OnInit {
+  
   ios: boolean;
   queryText = '';
-  excludeTracks: any = [];
-  shownSessions: any = [];
-  groups: any = [];
-  confDate: string;
   showSearchbar: boolean;
-  tagsAux : any[] = []
+  usersAux : any[] = []
   favorites: any[] = [];
   cpf : string;
   pages : number = 0;
 
-  tags: TagDTO[]
+  users: UsuarioDTO[]
 
   constructor(
     public alertCtrl: AlertController,
@@ -35,7 +34,7 @@ export class Tags implements OnInit {
     public toastCtrl: ToastController,
     public config: Config,
     private storage: StorageService,
-    public TagsService: TagService
+    public UsuarioService: UsuarioService
   ) { }
 
   ngOnInit() {
@@ -59,31 +58,17 @@ export class Tags implements OnInit {
   
 
   updateSchedule() {    
-      this.TagsService.allTags().subscribe((data: any) => {
-        this.tags = data;
-        this.tagsAux = data;
+      this.UsuarioService.allUsers().subscribe((data: any) => {
+        this.users = data;
+        this.usersAux = data;
       })
     
   }
 
-  async abrirCreateTag() {
-    const modal = await this.modalCtrl.create({
-      component: CreateTagPage,
-      presentingElement: this.routerOutlet.nativeEl
-    });
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-    // if (!data) {
-    //   this.excludeTracks = data;      
-    // }
-    this.updateSchedule()
-  }
-
   doInfinite(infiniteScrool){
     this.pages += 10;
-    this.TagsService.allTags().subscribe((data: any) => {
-      this.tags = data ;
+    this.UsuarioService.allUsers().subscribe((data: any) => {
+      this.users = data ;
     })
     setTimeout(() =>
     {
@@ -93,7 +78,7 @@ export class Tags implements OnInit {
 
   doRefresh(refresher){
     this.pages = 0;
-    this.tags = []
+    this.users = []
     this.updateSchedule();
     setTimeout(() =>{
       refresher.target.complete();
@@ -102,14 +87,16 @@ export class Tags implements OnInit {
 
   search(){
     let p = []
-    this.tags = this.tagsAux;
-    this.tags.forEach(
-      (x : TagDTO) =>{
-        if(x.descricao.toUpperCase().includes(this.queryText.toUpperCase())){
+    this.users = this.usersAux;
+    this.users.forEach(
+      (x : UsuarioDTO) =>{
+        if(x.nome.toUpperCase().includes(this.queryText.toUpperCase()) ||
+          x.perfil.toUpperCase().includes(this.queryText.toUpperCase()) ||
+          x.email.toUpperCase().includes(this.queryText.toUpperCase())){
           p.push(x);
         }
       }
     )
-    this.tags = p;
+    this.users = p;
   }
 }

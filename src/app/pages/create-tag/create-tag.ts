@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TagDTO } from '../../../models/tag.dto';
 import { StorageService } from '../../../services/application/storage.service';
 import { AlertController, ModalController, IonRouterOutlet, ToastController, NavController, LoadingController } from '@ionic/angular';
-import { UsuarioService } from '../../../services/domain/usuario.service';
+import { PermissaoService } from '../../../services/domain/permissao.service';
 import { TagService } from '../../../services/domain/tag.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { TagService } from '../../../services/domain/tag.service';
   templateUrl: 'create-tag.html'
 })
 export class CreateTagPage {
-  default = '';
+  voltar = '';
   tagId = ''
   cpf : string;
 
@@ -23,7 +23,7 @@ export class CreateTagPage {
     public alertCtrl: AlertController,
     private route: ActivatedRoute,
     public modalCtrl: ModalController,
-    private UsuarioService: UsuarioService,
+    private PermissaoService: PermissaoService,
     private storage: StorageService,
     public router: Router,
     public routerOutlet: IonRouterOutlet,
@@ -51,7 +51,7 @@ export class CreateTagPage {
   }
 
   ionViewDidEnter() {
-    this.default = `/app/tabs/tags`;
+    this.voltar = `/app/tabs/tags`;
   }
 
   async toggleDelete() {

@@ -9,7 +9,21 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule)
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule)
+      },
+      {
+        path: 'registrar',
+        loadChildren: () => import('./pages/sign-up/sign-up.module').then(m => m.SignUpModule)
+      },
+      {
+        path: 'reset-password',
+        loadChildren: () => import('./pages/reset-password/reset-password.module').then(m => m.ResetPasswordModule)
+      }
+
+    ]
   },
   {
     path: 'app',
